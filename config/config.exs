@@ -7,6 +7,9 @@
 # General application configuration
 import Config
 
+# @todo fix so this can be removed maybe
+config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Direct
+
 config :virt,
   ecto_repos: [Virt.Repo],
   generators: [binary_id: true]
