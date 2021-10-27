@@ -34,8 +34,8 @@ defmodule Virt.Libvirt.Pools do
     with changeset <- Pool.changeset(%Pool{}, attrs),
          {:ok, pool} <- Repo.insert(changeset),
          pool <- Repo.preload(pool, [:host]),
-         {:ok, nil} <- create_libvirt_pool(pool),
-         {:ok, pool} <- update_pool(pool, %{"status" => "COMPLETE"})
+         _ <- create_libvirt_pool(pool),
+         {:ok, pool} <- update_pool(pool, %{"created" => true})
     do
       pool
     else
@@ -53,13 +53,15 @@ defmodule Virt.Libvirt.Pools do
     with xml <- Templates.render_pool(pool),
          {:ok, socket} <- Libvirt.connect(pool.host.connection_string),
          {:ok, %{"remote_nonnull_storage_pool" => pool}} <- Libvirt.storage_pool_define_xml(socket, %{"xml" => xml, "flags" => 0}),
-         nil <- Libvirt.storage_pool_build(socket, %{"pool" => pool, "flags" => 0}),
-         nil <- Libvirt.storage_pool_create(socket, %{"pool" => pool, "flags" => 0})
+         {:ok, nil} <- Libvirt.storage_pool_build(socket, %{"pool" => pool, "flags" => 0}),
+         {:ok, nil} <- Libvirt.storage_pool_create(socket, %{"pool" => pool, "flags" => 0})
     do
       pool
     else
       {:error, %Libvirt.RPC.Packet{payload: error}} ->
         {:error, error, pool}
+      {:error, :econnrefused} ->
+        {:error, "Could not connect to Libvirt host #{pool.host.connection_string}"}
     end
   end
 

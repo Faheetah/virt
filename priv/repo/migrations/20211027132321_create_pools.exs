@@ -8,8 +8,8 @@ defmodule Virt.Repo.Migrations.CreatePools do
       add :type, :string, null: false
       add :path, :string, null: false
       add :autostart, :boolean, default: true
+      add :created, :boolean, default: false
       add :host_id, references(:hosts, on_delete: :delete_all, type: :binary_id)
-      add :status, :string, default: "PROVISIONING"
 
       timestamps()
     end

@@ -16,7 +16,11 @@ defmodule Virt do
     end
   end
 
-  def add_pool(host, path, name \\ nil) do
-    Virt.Libvirt.Pools.create_pool(%{name: name || path, path: path, type: "dir", host_id: host.id})
+  def add_pool(host, path, name) do
+    Virt.Libvirt.Pools.create_pool(%{name: name, path: path, type: "dir", host_id: host.id})
+  end
+
+  def add_volume(pool, name) do
+    Virt.Libvirt.Volumes.create_volume(%{name: name, capacity_bytes: 1024*1024, pool_id: pool.id})
   end
 end

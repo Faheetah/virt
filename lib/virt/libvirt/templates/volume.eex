@@ -1,0 +1,11 @@
+<volume>
+​  <name><%= volume.id %></name>
+​  <allocation>0</allocation>
+​  <capacity unit="B"><%= volume.capacity_bytes %></capacity>
+​  <target>
+​    <path><%= volume.id %></path>
+​    <permissions>
+​      <mode>0750</mode>
+​    </permissions>
+​  </target>
+​</volume>
