@@ -1,0 +1,12 @@
+<pool type="<%= pool.type %>">
+  <name><%= pool.name %></name>
+  <uuid><%= pool.id %></uuid>
+  <target>
+    <path><%= pool.path %></path>
+    <permissions>
+      <mode>0750</mode>
+      <owner>-1</owner>
+      <group>-1</group>
+    </permissions>
+  </target>
+</pool>
