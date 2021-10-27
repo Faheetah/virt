@@ -7,6 +7,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
   @foreign_key_type :binary_id
   schema "volumes" do
     field :name, :string
+    field :key, :string
     field :capacity_bytes, :integer
     field :created, :boolean, default: false
     belongs_to :pool, Pool
@@ -17,7 +18,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
   @doc false
   def changeset(volume, attrs) do
     volume
-    |> cast(attrs, [:name, :capacity_bytes, :pool_id, :created])
+    |> cast(attrs, [:name, :key, :capacity_bytes, :pool_id, :created])
     |> validate_required([:name, :capacity_bytes])
   end
 end

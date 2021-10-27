@@ -78,7 +78,21 @@ defmodule Virt.Libvirt.Pools do
   Deletes a pool.
   """
   def delete_pool(%Pool{} = pool) do
-    Repo.delete(pool)
+    with :ok <- delete_libvirt_pool(pool),
+         {:ok, pool} <- Repo.delete(pool)
+    do
+      {:ok, pool}
+    end
+  end
+
+  defp delete_libvirt_pool(pool) do
+    with pool <- Repo.preload(pool, [:host]),
+         {:ok, socket} <- Libvirt.connect(pool.host.connection_string),
+         _ <- Libvirt.storage_pool_destroy(socket, %{"pool" => %{"name" => pool.name, "uuid" => pool.id}}),
+         {:ok, nil} <- Libvirt.storage_pool_undefine(socket, %{"pool" => %{"name" => pool.name, "uuid" => pool.id}})
+    do
+      :ok
+    end
   end
 
   @doc """

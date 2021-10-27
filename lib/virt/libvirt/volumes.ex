@@ -30,8 +30,8 @@ defmodule Virt.Libvirt.Volumes do
     with changeset <- Volume.changeset(%Volume{}, attrs),
          {:ok, volume} <- Repo.insert(changeset),
          volume <- Repo.preload(volume, [pool: [:host]]),
-         {:ok, _} <- create_libvirt_volume(volume),
-         {:ok, volume} <- update_volume(volume, %{"created" => true})
+         {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume),
+         {:ok, volume} <- update_volume(volume, %{"created" => true, "key" => key})
     do
       volume
     else
@@ -66,7 +66,20 @@ defmodule Virt.Libvirt.Volumes do
   Deletes a volume.
   """
   def delete_volume(%Volume{} = volume) do
-    Repo.delete(volume)
+    with :ok <- delete_libvirt_volume(volume),
+         {:ok, volume} <- Repo.delete(volume)
+    do
+      {:ok, volume}
+    end
+  end
+
+  defp delete_libvirt_volume(volume) do
+    with volume <- Repo.preload(volume, [pool: [:host]]),
+         {:ok, socket} <- Libvirt.connect(volume.pool.host.connection_string),
+         {:ok, nil} <- Libvirt.storage_vol_delete(socket, %{"vol" => %{"pool" => volume.pool.name, "name" => volume.id, "key" => volume.key}, "flags" => 0})
+    do
+      :ok
+    end
   end
 
   @doc """
