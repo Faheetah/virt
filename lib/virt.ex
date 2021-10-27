@@ -20,7 +20,7 @@ defmodule Virt do
     Virt.Libvirt.Pools.create_pool(%{name: name, path: path, type: "dir", host_id: host.id})
   end
 
-  def add_volume(pool, name, capacity_bytes \\ 1048576) do
+  def add_volume(pool, name, capacity_bytes \\ 1_048_576) do
     Virt.Libvirt.Volumes.create_volume(%{name: name, capacity_bytes: capacity_bytes, pool_id: pool.id})
   end
 end

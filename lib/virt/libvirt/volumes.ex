@@ -33,7 +33,7 @@ defmodule Virt.Libvirt.Volumes do
          {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume),
          {:ok, volume} <- update_volume(volume, %{"created" => true, "key" => key})
     do
-      volume
+      {:ok, volume}
     else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}

@@ -49,7 +49,8 @@ defmodule Virt.MixProject do
       {:gettext, "~> 0.18"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:libvirt, path: "../libvirt"}
+      {:libvirt, path: "../libvirt"},
+      {:credo, "~> 1.5", runtime: false, only: :dev}
     ]
   end
 

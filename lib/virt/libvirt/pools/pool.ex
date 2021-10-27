@@ -1,4 +1,8 @@
 defmodule Virt.Libvirt.Pools.Pool do
+  @moduledoc """
+  Manage Libvirt pools
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Hosts.Host

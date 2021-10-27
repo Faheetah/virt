@@ -1,4 +1,8 @@
 defmodule Virt.Libvirt.Volumes.Volume do
+  @moduledoc """
+  A representation of a Libvirt volume resource
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Pools.Pool
@@ -19,6 +23,6 @@ defmodule Virt.Libvirt.Volumes.Volume do
   def changeset(volume, attrs) do
     volume
     |> cast(attrs, [:name, :key, :capacity_bytes, :pool_id, :created])
-    |> validate_required([:name, :capacity_bytes])
+    |> validate_required([:name, :capacity_bytes, :pool_id])
   end
 end

@@ -8,7 +8,7 @@ defmodule Virt.Repo.Migrations.CreateVolumes do
       add :key, :string
       add :capacity_bytes, :integer, null: false
       add :created, :boolean, default: false
-      add :pool_id, references(:pools, on_delete: :delete_all, type: :binary_id)
+      add :pool_id, references(:pools, on_delete: :nothing, type: :binary_id)
 
       timestamps()
     end

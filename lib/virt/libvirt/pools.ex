@@ -37,7 +37,7 @@ defmodule Virt.Libvirt.Pools do
          _ <- create_libvirt_pool(pool),
          {:ok, pool} <- update_pool(pool, %{"created" => true})
     do
-      pool
+      {:ok, pool}
     else
       {:error, %Ecto.Changeset{} = changeset} ->
         {:error, changeset}
@@ -45,7 +45,6 @@ defmodule Virt.Libvirt.Pools do
       {:error, error, %Pool{} = pool} ->
         delete_pool(pool)
         {:error, error}
-
     end
   end
 

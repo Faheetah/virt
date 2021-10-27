@@ -1,0 +1,28 @@
+<domain type='kvm'>
+  <name><%= domain.name %></name>
+  <uuid><%= domain.id %></uuid>
+  <memory unit='B'><%= domain.memory_bytes %></memory>
+  <currentMemory unit='B'><%= domain.memory_bytes %></currentMemory>
+  <vcpu placement='static'><%= domain.vcpus %></vcpu>
+  <os>
+    <type arch='x86_64'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <vmport state='off'/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/kvm-spice</emulator>
+    <%= for volume <- [] do %>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='<%= volume.key %>'/>
+      <target dev='hda' bus='ide'/>
+      <%# need to iterate drive slots %>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <% end %>
+  </devices>
+</domain>

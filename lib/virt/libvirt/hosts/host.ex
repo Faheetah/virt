@@ -1,7 +1,12 @@
 defmodule Virt.Libvirt.Hosts.Host do
+  @moduledoc """
+  A Libvirt host with connection information
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Pools.Pool
+  alias Virt.Libvirt.Domains.Domain
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -9,6 +14,7 @@ defmodule Virt.Libvirt.Hosts.Host do
     field :connection_string, :string
     field :name, :string
     has_many :pools, Pool
+    has_many :domains, Domain
 
     timestamps()
   end
