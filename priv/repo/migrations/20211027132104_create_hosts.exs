@@ -9,5 +9,7 @@ defmodule Virt.Repo.Migrations.CreateHosts do
 
       timestamps()
     end
+
+    create(unique_index(:hosts, [:name, :connection_string]))
   end
 end

@@ -16,5 +16,6 @@ defmodule Virt.Libvirt.Hosts.Host do
     host
     |> cast(attrs, [:name, :connection_string])
     |> validate_required([:name, :connection_string])
+    |> unique_constraint([:name, :connection_string])
   end
 end

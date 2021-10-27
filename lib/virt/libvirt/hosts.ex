@@ -42,6 +42,8 @@ defmodule Virt.Libvirt.Hosts do
 
   @doc """
   Deletes a host.
+
+  WARNING: Deleting a host orphans all assets on the host. This is irreversible.
   """
   def delete_host(%Host{} = host) do
     Repo.delete(host)
