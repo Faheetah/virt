@@ -5,6 +5,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias Virt.Libvirt.Domains.DomainDisk
   alias Virt.Libvirt.Pools.Pool
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -15,6 +16,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
     field :capacity_bytes, :integer
     field :created, :boolean, default: false
     belongs_to :pool, Pool
+    has_one :domain_disk, DomainDisk
 
     timestamps()
   end

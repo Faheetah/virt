@@ -29,7 +29,7 @@ defmodule Virt.Libvirt.Domains do
   def create_domain(attrs \\ %{}) do
     with changeset <- Domain.changeset(%Domain{}, attrs),
          {:ok, domain} <- Repo.insert(changeset),
-         domain <- Repo.preload(domain, [:host]),
+         domain <- Repo.preload(domain, [:host, domain_disks: [:volume]]),
          {:ok, _} <- create_libvirt_domain(domain),
          {:ok, domain} <- update_domain(domain, %{"created" => true})
     do

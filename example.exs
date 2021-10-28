@@ -12,8 +12,12 @@ volume_name = Libvirt.UUID.gen_string()
 IO.inspect volume
 
 domain_name = Libvirt.UUID.gen_string()
-{:ok, domain} = Virt.Libvirt.Domains.create_domain(%{name: domain_name, memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id})
-IO.inspect domain
+domain_disks = [%{device: "hda", volume_id: volume.id}]
+{:ok, domain} = Virt.Libvirt.Domains.create_domain(%{name: domain_name, memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id, domain_disks: domain_disks})
+domain
+|> Virt.Repo.preload(domain_disks: [:volume])
+|> IO.inspect
+
 IO.inspect Libvirt.connect_list_all_domains(socket, %{"need_results" => 1, "flags" => 0})
 
 Virt.Libvirt.Domains.delete_domain(domain)

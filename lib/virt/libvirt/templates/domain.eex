@@ -15,11 +15,11 @@
   </features>
   <devices>
     <emulator>/usr/bin/kvm-spice</emulator>
-    <%= for volume <- [] do %>
+    <%= for disk <- domain.domain_disks do %>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
-      <source file='<%= volume.key %>'/>
-      <target dev='hda' bus='ide'/>
+      <source file='<%= disk.volume.key %>'/>
+      <target dev='<%= disk.device %>' bus='ide'/>
       <%# need to iterate drive slots %>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>

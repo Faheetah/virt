@@ -5,7 +5,6 @@ defmodule Virt.Repo.Migrations.CreateDomains do
     create table(:domains, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :name, :string, null: false
-      add :host_id, :integer
       add :memory_bytes, :integer, null: false
       add :vcpus, :integer, null: false
       add :created, :boolean, default: false

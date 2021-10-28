@@ -76,6 +76,7 @@ defmodule Virt.Libvirt.Volumes do
   defp delete_libvirt_volume(volume) do
     with volume <- Repo.preload(volume, [pool: [:host]]),
          {:ok, socket} <- Libvirt.connect(volume.pool.host.connection_string),
+         _ <- Libvirt.storage_vol_wipe(socket, %{"vol" => %{"pool" => volume.pool.name, "name" => volume.id, "key" => volume.key}, "flags" => 0}),
          {:ok, nil} <- Libvirt.storage_vol_delete(socket, %{"vol" => %{"pool" => volume.pool.name, "name" => volume.id, "key" => volume.key}, "flags" => 0})
     do
       :ok
