@@ -3,12 +3,14 @@ IO.inspect host
 
 {:ok, socket} = Libvirt.connect(host.connection_string)
 
-pool_name = Libvirt.UUID.gen_string()
-{:ok, pool} = Virt.Libvirt.Pools.create_pool(%{name: pool_name, path: "/tmp/#{pool_name}", type: "dir", host_id: host.id})
+{:ok, pool} = Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool", type: "dir", host_id: host.id})
 IO.inspect pool
 
+{:ok, base_image} = Virt.Libvirt.Volumes.create_volume(%{name: "ubuntu", capacity_bytes: 1024*1024, pool_id: pool.id})
+IO.inspect base_image
+
 volume_name = Libvirt.UUID.gen_string()
-{:ok, volume} = Virt.Libvirt.Volumes.create_volume(%{name: volume_name, capacity_bytes: 1024*1024, pool_id: pool.id})
+{:ok, volume} = Virt.Libvirt.Volumes.create_volume(%{name: volume_name, capacity_bytes: 1024*1024, pool_id: pool.id}, base_image)
 IO.inspect volume
 
 domain_name = Libvirt.UUID.gen_string()
@@ -23,6 +25,7 @@ IO.inspect Libvirt.connect_list_all_domains(socket, %{"need_results" => 1, "flag
 Virt.Libvirt.Domains.delete_domain(domain)
 IO.inspect Libvirt.connect_list_all_domains(socket, %{"need_results" => 1, "flags" => 0})
 
+Virt.Libvirt.Volumes.delete_volume(base_image)
 Virt.Libvirt.Volumes.delete_volume(volume)
 IO.inspect Libvirt.storage_pool_list_all_volumes(socket, %{"pool" => %{"name" => pool.name, "uuid" => pool.id}, "need_results" => 1, "flags" => 0})
 

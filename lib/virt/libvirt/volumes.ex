@@ -26,11 +26,11 @@ defmodule Virt.Libvirt.Volumes do
   @doc """
   Creates a volume.
   """
-  def create_volume(attrs \\ %{}) do
+  def create_volume(attrs, base_image \\ nil) do
     with changeset <- Volume.changeset(%Volume{}, attrs),
          {:ok, volume} <- Repo.insert(changeset),
          volume <- Repo.preload(volume, [pool: [:host]]),
-         {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume),
+         {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume, base_image),
          {:ok, volume} <- update_volume(volume, %{"created" => true, "key" => key})
     do
       {:ok, volume}
@@ -44,10 +44,19 @@ defmodule Virt.Libvirt.Volumes do
     end
   end
 
-  defp create_libvirt_volume(volume) do
+  defp create_libvirt_volume(volume, nil) do
     with xml <- Templates.render_volume(volume),
          {:ok, socket} <- Libvirt.connect(volume.pool.host.connection_string),
          {:ok, volume} <- Libvirt.storage_vol_create_xml(socket, %{"pool" => %{"name" => volume.pool.name, "uuid" => volume.pool.id}, "xml" => xml, "flags" => 0})
+    do
+      {:ok, volume}
+    end
+  end
+
+  defp create_libvirt_volume(volume, base_image) do
+    with xml <- Templates.render_volume(volume),
+         {:ok, socket} <- Libvirt.connect(volume.pool.host.connection_string),
+         {:ok, volume} <- Libvirt.storage_vol_create_xml_from(socket, %{"clonevol" => %{"pool" => base_image.pool.name, "name" => base_image.id, "key" => base_image.key}, "pool" => %{"name" => volume.pool.name, "uuid" => volume.pool.id}, "xml" => xml, "flags" => 0})
     do
       {:ok, volume}
     end
