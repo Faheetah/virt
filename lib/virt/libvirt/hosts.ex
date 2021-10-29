@@ -23,6 +23,13 @@ defmodule Virt.Libvirt.Hosts do
   def get_host!(id), do: Repo.get!(Host, id)
 
   @doc """
+  Gets a host by name.
+  """
+  def get_host_by_name!(name) do
+    Repo.get_by(Host, name: name)
+  end
+
+  @doc """
   Creates a host.
   """
   def create_host(attrs \\ %{}) do

@@ -24,6 +24,11 @@ defmodule Virt.Libvirt.Volumes do
   def get_volume!(id), do: Repo.get!(Volume, id)
 
   @doc """
+  Get a volume by name
+  """
+  def get_volume_by_name!(name), do: Repo.get_by(Volume, name: name)
+
+  @doc """
   Creates a volume.
   """
   def create_volume(attrs, base_image \\ nil) do
@@ -60,6 +65,30 @@ defmodule Virt.Libvirt.Volumes do
     do
       {:ok, volume}
     end
+  end
+
+  @doc """
+  For helping to manage base images
+  """
+  def download_image(url, to) do
+    File.mkdir_p!("images/")
+    unless File.exists?("images/#{to}") do
+      {:ok, :saved_to_file} = :httpc.request(:get, {String.to_charlist(url), []}, [], [stream: String.to_charlist("images/#{to}")])
+    end
+  end
+
+ def create_base_image(%{"url" => url, "name" => name} = attrs) do
+    download_image(url, name)
+    size = File.stat!("images/#{name}").size
+    vol =
+      attrs
+      |> Map.put("capacity_bytes", size)
+      |> create_volume()
+      |> then(fn {:ok, v} -> v end)
+      |> Virt.Repo.preload(pool: [:host])
+
+    {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
+    Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
   end
 
   @doc """
