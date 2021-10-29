@@ -4,7 +4,7 @@
   <target>
     <path><%= pool.path %></path>
     <permissions>
-      <mode>0750</mode>
+      <mode>0777</mode>
       <owner>-1</owner>
       <group>-1</group>
     </permissions>

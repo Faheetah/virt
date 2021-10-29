@@ -32,3 +32,5 @@ virt-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# folder base images are downloaded to
+/images

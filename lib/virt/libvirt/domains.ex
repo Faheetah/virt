@@ -4,6 +4,8 @@ defmodule Virt.Libvirt.Domains do
   """
 
   import Ecto.Query, warn: false
+  require Logger
+
   alias Virt.Repo
 
   alias Virt.Libvirt.Domains.Domain
@@ -39,6 +41,7 @@ defmodule Virt.Libvirt.Domains do
         {:error, changeset}
 
       {:error, error, %Domain{} = domain} ->
+        Logger.error(error)
         delete_domain(domain)
         {:error, error}
     end

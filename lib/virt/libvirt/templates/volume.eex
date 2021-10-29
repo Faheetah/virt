@@ -6,7 +6,7 @@
 ​    <path><%= volume.id %></path>
     <format type="<%= volume.type %>" />
 ​    <permissions>
-​      <mode>0640</mode>
+​      <mode>0666</mode>
 ​    </permissions>
 ​  </target>
 ​</volume>
