@@ -28,6 +28,13 @@ defmodule Virt.Libvirt.Pools do
   end
 
   @doc """
+  Gets a pool by name
+  """
+  def get_pool_by_name!(name) do
+    Repo.get_by(Pool, name: name)
+  end
+
+  @doc """
   Creates a pool.
   """
   def create_pool(attrs \\ %{}) do
@@ -53,7 +60,8 @@ defmodule Virt.Libvirt.Pools do
          {:ok, socket} <- Libvirt.connect(pool.host.connection_string),
          {:ok, %{"remote_nonnull_storage_pool" => pool}} <- Libvirt.storage_pool_define_xml(socket, %{"xml" => xml, "flags" => 0}),
          {:ok, nil} <- Libvirt.storage_pool_build(socket, %{"pool" => pool, "flags" => 0}),
-         {:ok, nil} <- Libvirt.storage_pool_create(socket, %{"pool" => pool, "flags" => 0})
+         {:ok, nil} <- Libvirt.storage_pool_create(socket, %{"pool" => pool, "flags" => 0}),
+         {:ok, nil} <- Libvirt.storage_pool_set_autostart(socket, %{"pool" => pool, "autostart" => 1})
     do
       pool
     else
@@ -81,6 +89,11 @@ defmodule Virt.Libvirt.Pools do
          {:ok, pool} <- Repo.delete(pool)
     do
       {:ok, pool}
+    else
+      {:error, error} ->
+        if error.payload =~ "VIR_ERR_NO_STORAGE_POOL" do
+          Repo.delete(pool)
+        end
     end
   end
 
