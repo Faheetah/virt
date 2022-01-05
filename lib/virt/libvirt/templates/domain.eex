@@ -37,10 +37,16 @@
       <target type='serial' port='0'/>
     </console>
 
-    <interface type='user'>
-      <mac address="00:11:22:33:44:55"/>
-      <%# can use specific IP here, will want to expand this to OVS and such later %>
-      <ip family='ipv4' address='10.0.0.101' prefix='24'/>
+    <%= for interface <- domain.domain_interfaces do %>
+    <interface type='<%= interface.type%>'>
+      <mac address='<%= interface.mac %>'/>
+      <%= if interface.type == "bridge" do %>
+      <source bridge='<%= interface.bridge %>'/>
+      <% end %>
+      <%= if interface.type == "user" and interface.ip do %>
+      <ip family='ipv4' address='<%= String.split(interface.ip, "/")|>hd %>' prefix='<%= String.split(interface.ip, "/")|>tl %>'/>
+      <% end %>
     </interface>
+    <% end %>
   </devices>
 </domain>

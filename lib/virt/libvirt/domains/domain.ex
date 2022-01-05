@@ -6,6 +6,7 @@ defmodule Virt.Libvirt.Domains.Domain do
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Domains.DomainDisk
+  alias Virt.Libvirt.Domains.DomainInterface
   alias Virt.Libvirt.Hosts.Host
   alias Virt.Libvirt.Volumes.Volume
 
@@ -18,6 +19,7 @@ defmodule Virt.Libvirt.Domains.Domain do
     field :created, :boolean, default: false
     belongs_to :host, Host
     has_many :domain_disks, DomainDisk, on_delete: :delete_all
+    has_many :domain_interfaces, DomainInterface, on_delete: :delete_all
 
     timestamps()
   end
@@ -27,6 +29,7 @@ defmodule Virt.Libvirt.Domains.Domain do
     domain
     |> cast(attrs, [:name, :memory_bytes, :vcpus, :host_id])
     |> cast_assoc(:domain_disks)
+    |> cast_assoc(:domain_interfaces)
     |> validate_required([:name, :memory_bytes, :vcpus])
   end
 end

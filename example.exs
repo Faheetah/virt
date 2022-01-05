@@ -22,7 +22,7 @@ Virt.Libvirt.Pools.list_pools()
 
 ## Create base image
 
-{:ok, base_image} =
+{:ok, _base_image} =
   %{
     "url" => "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img",
     "name" => "UBUNTU_20.04",
@@ -38,4 +38,10 @@ domain_disks = [
   %{device: "hda", volume_id: volume.id},
   %{device: "hdb", volume_id: second.id}
 ]
-{:ok, domain} = Virt.Libvirt.Domains.create_domain(%{name: "test-domain", memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id, domain_disks: domain_disks})
+
+domain_interfaces = [
+  %{type: "user", mac: "16:92:54:00:00:01", ip: "169.254.0.1/24"},
+  %{type: "bridge", mac: "1c:ed:de:ad:b0:0b", bridge: "br0", ip: "10.0.0.50/24"}
+]
+
+{:ok, _domain} = Virt.Libvirt.Domains.create_domain(%{name: "test-domain", memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id, domain_disks: domain_disks, domain_interfaces: domain_interfaces})
