@@ -17,7 +17,7 @@ defmodule Virt.Libvirt.Domains.Domain do
     field :vcpus, :integer
     field :created, :boolean, default: false
     belongs_to :host, Host
-    has_many :domain_disks, DomainDisk
+    has_many :domain_disks, DomainDisk, on_delete: :delete_all
 
     timestamps()
   end

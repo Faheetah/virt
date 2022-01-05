@@ -30,7 +30,7 @@ defmodule Virt.Libvirt.Pools do
   @doc """
   Gets a pool by name
   """
-  def get_pool_by_name!(name) do
+  def get_pool_by_name!(host_id, name) do
     Repo.get_by(Pool, name: name)
   end
 
@@ -41,7 +41,7 @@ defmodule Virt.Libvirt.Pools do
     with changeset <- Pool.changeset(%Pool{}, attrs),
          {:ok, pool} <- Repo.insert(changeset),
          pool <- Repo.preload(pool, [:host]),
-         _ <- create_libvirt_pool(pool),
+         {:ok, _} <- create_libvirt_pool(pool),
          {:ok, pool} <- update_pool(pool, %{"created" => true})
     do
       {:ok, pool}
@@ -52,6 +52,8 @@ defmodule Virt.Libvirt.Pools do
       {:error, error, %Pool{} = pool} ->
         delete_pool(pool)
         {:error, error}
+
+      _ -> {:error, "an unspecified error occurred"}
     end
   end
 
@@ -63,12 +65,13 @@ defmodule Virt.Libvirt.Pools do
          {:ok, nil} <- Libvirt.storage_pool_create(socket, %{"pool" => pool, "flags" => 0}),
          {:ok, nil} <- Libvirt.storage_pool_set_autostart(socket, %{"pool" => pool, "autostart" => 1})
     do
-      pool
+      {:ok, pool}
     else
       {:error, %Libvirt.RPC.Packet{payload: error}} ->
         {:error, error, pool}
       {:error, :econnrefused} ->
         {:error, "Could not connect to Libvirt host #{pool.host.connection_string}"}
+      _ -> {:error, "an unspecified error occurred"}
     end
   end
 

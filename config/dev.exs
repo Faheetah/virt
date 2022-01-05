@@ -1,6 +1,7 @@
 import Config
 
-config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Test
+config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Direct
+# config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Test
 
 # Configure your database
 config :virt, Virt.Repo,

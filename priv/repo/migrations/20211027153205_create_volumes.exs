@@ -4,10 +4,10 @@ defmodule Virt.Repo.Migrations.CreateVolumes do
   def change do
     create table(:volumes, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :name, :string, null: false
+      add :name, :string
       add :key, :string
       add :type, :string, default: "raw"
-      add :capacity_bytes, :integer, null: false
+      add :capacity_bytes, :bigint, null: false
       add :created, :boolean, default: false
       add :pool_id, references(:pools, on_delete: :nothing, type: :binary_id)
 

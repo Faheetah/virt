@@ -1,33 +1,41 @@
-{:ok, host} = Virt.Libvirt.Hosts.create_host(%{"name" => Libvirt.UUID.gen_string(), "connection_string" => "localhost"})
-IO.inspect host
+## Setup the host
 
-{:ok, socket} = Libvirt.connect(host.connection_string)
+# {:ok, host} = Virt.Libvirt.Hosts.create_host(%{"name" => Libvirt.UUID.gen_string(), "connection_string" => "localhost"})
 
-{:ok, pool} = Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool", type: "dir", host_id: host.id})
-IO.inspect pool
+Virt.Libvirt.Hosts.create_host(%{"name" => "colosseum.sudov.im", "connection_string" => "colosseum.sudov.im"})
+host = Virt.Libvirt.Hosts.get_host_by_name!("colosseum.sudov.im")
 
-{:ok, base_image} = Virt.Libvirt.Volumes.create_volume(%{name: "ubuntu", capacity_bytes: 1024*1024, pool_id: pool.id})
-IO.inspect base_image
+## Delete everything
 
-volume_name = Libvirt.UUID.gen_string()
-{:ok, volume} = Virt.Libvirt.Volumes.create_volume(%{name: volume_name, capacity_bytes: 1024*1024, pool_id: pool.id}, base_image)
-IO.inspect volume
+Virt.Libvirt.Domains.list_domains()
+|> Enum.each(&Virt.Libvirt.Domains.delete_domain/1)
 
-domain_name = Libvirt.UUID.gen_string()
-domain_disks = [%{device: "hda", volume_id: volume.id}]
-{:ok, domain} = Virt.Libvirt.Domains.create_domain(%{name: domain_name, memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id, domain_disks: domain_disks})
-domain
-|> Virt.Repo.preload(domain_disks: [:volume])
-|> IO.inspect
+Virt.Libvirt.Volumes.list_volumes()
+|> Enum.each(&Virt.Libvirt.Volumes.delete_volume/1)
 
-IO.inspect Libvirt.connect_list_all_domains(socket, %{"need_results" => 1, "flags" => 0})
+Virt.Libvirt.Pools.list_pools()
+|> Enum.each(&Virt.Libvirt.Pools.delete_pool/1)
 
-Virt.Libvirt.Domains.delete_domain(domain)
-IO.inspect Libvirt.connect_list_all_domains(socket, %{"need_results" => 1, "flags" => 0})
+## Create pool
 
-Virt.Libvirt.Volumes.delete_volume(base_image)
-Virt.Libvirt.Volumes.delete_volume(volume)
-IO.inspect Libvirt.storage_pool_list_all_volumes(socket, %{"pool" => %{"name" => pool.name, "uuid" => pool.id}, "need_results" => 1, "flags" => 0})
+{_, pool} = Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool", type: "dir", host_id: host.id})
 
-Virt.Libvirt.Pools.delete_pool(pool)
-IO.inspect Libvirt.connect_list_all_storage_pools(socket, %{"need_results" => 1, "flags" => 0})
+## Create base image
+
+{:ok, base_image} =
+  %{
+    "url" => "https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img",
+    "name" => "UBUNTU_20.04",
+    "pool_id" => pool.id
+  }
+  |> Virt.Libvirt.Volumes.create_base_image()
+
+## Create domain
+
+{:ok, volume} = Virt.Libvirt.Volumes.create_volume(%{type: "qcow2", capacity_bytes: 50*1024*1024*1024, pool_id: pool.id}, "UBUNTU_20.04")
+{:ok, second} = Virt.Libvirt.Volumes.create_volume(%{type: "qcow2", capacity_bytes: 100*1024*1024*1024, pool_id: pool.id})
+domain_disks = [
+  %{device: "hda", volume_id: volume.id},
+  %{device: "hdb", volume_id: second.id}
+]
+{:ok, domain} = Virt.Libvirt.Domains.create_domain(%{name: "test-domain", memory_bytes: 256*1024*1024, vcpus: 1, host_id: host.id, domain_disks: domain_disks})

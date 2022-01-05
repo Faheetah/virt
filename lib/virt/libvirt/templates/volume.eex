@@ -1,12 +1,13 @@
 <volume>
-​  <name><%= volume.id %></name>
-​  <allocation>0</allocation>
-​  <capacity unit="B"><%= volume.capacity_bytes %></capacity>
-​  <target>
-​    <path><%= volume.id %></path>
+  <name><%= volume.id %></name>
+  <allocation>0</allocation>
+  <capacity unit="B"><%= volume.capacity_bytes %></capacity>
+  <target>
+    <path><%= volume.id %></path>
     <format type="<%= volume.type %>" />
-​    <permissions>
-​      <mode>0666</mode>
-​    </permissions>
-​  </target>
-​</volume>
+    <permissions>
+      <mode>0600</mode>
+      <user>libvirt-qemu</user>
+    </permissions>
+  </target>
+</volume>

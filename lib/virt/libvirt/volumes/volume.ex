@@ -17,7 +17,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
     field :capacity_bytes, :integer
     field :created, :boolean, default: false
     belongs_to :pool, Pool
-    has_one :domain_disk, DomainDisk
+    has_one :domain_disk, DomainDisk, on_delete: :delete_all
 
     timestamps()
   end
@@ -26,6 +26,6 @@ defmodule Virt.Libvirt.Volumes.Volume do
   def changeset(volume, attrs) do
     volume
     |> cast(attrs, [:name, :key, :type, :capacity_bytes, :pool_id, :created])
-    |> validate_required([:name, :capacity_bytes, :pool_id])
+    |> validate_required([:capacity_bytes, :pool_id])
   end
 end

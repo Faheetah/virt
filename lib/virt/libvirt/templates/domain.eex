@@ -7,31 +7,40 @@
   <os>
     <type arch='x86_64'>hvm</type>
     <boot dev='hd'/>
+    <smbios mode="sysinfo"/>
   </os>
+  <sysinfo type="smbios">
+    <system>
+    <%# IP needs to map to the server or hypervisor %>
+      <entry name="serial">ds=nocloud-net;s=http://10.0.0.2/</entry>
+    </system>
+  </sysinfo>
   <features>
     <acpi/>
     <apic/>
     <vmport state='off'/>
   </features>
   <devices>
+    <graphics type='vnc' port='5900' autoport='yes'/>
     <emulator>/usr/bin/kvm-spice</emulator>
     <%= for disk <- domain.domain_disks do %>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='<%= disk.volume.key %>'/>
       <target dev='<%= disk.device %>' bus='ide'/>
-      <%# need to iterate drive slots %>
-      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
-    <interface type='network'>
-      <source network='host-bridge'/>
-    </interface>
+    <% end %>
     <serial type='pty'>
       <target port='0'/>
     </serial>
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
-    <% end %>
+
+    <interface type='user'>
+      <mac address="00:11:22:33:44:55"/>
+      <%# can use specific IP here, will want to expand this to OVS and such later %>
+      <ip family='ipv4' address='10.0.0.101' prefix='24'/>
+    </interface>
   </devices>
 </domain>

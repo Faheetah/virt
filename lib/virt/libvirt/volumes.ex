@@ -28,10 +28,19 @@ defmodule Virt.Libvirt.Volumes do
   """
   def get_volume_by_name!(name), do: Repo.get_by(Volume, name: name)
 
+  def maybe_get_volume_by_name!(nil), do: nil
+  def maybe_get_volume_by_name!(name) do
+    Volume
+    |> Repo.get_by(name: name)
+    |> Repo.preload([:pool])
+  end
+
   @doc """
   Creates a volume.
   """
-  def create_volume(attrs, base_image \\ nil) do
+  def create_volume(attrs, base_image_name \\ nil) do
+    base_image = maybe_get_volume_by_name!(base_image_name)
+
     with changeset <- Volume.changeset(%Volume{}, attrs),
          {:ok, volume} <- Repo.insert(changeset),
          volume <- Repo.preload(volume, [pool: [:host]]),
@@ -61,9 +70,10 @@ defmodule Virt.Libvirt.Volumes do
   defp create_libvirt_volume(volume, base_image) do
     with xml <- Templates.render_volume(volume),
          {:ok, socket} <- Libvirt.connect(volume.pool.host.connection_string),
-         {:ok, volume} <- Libvirt.storage_vol_create_xml_from(socket, %{"clonevol" => %{"pool" => base_image.pool.name, "name" => base_image.id, "key" => base_image.key}, "pool" => %{"name" => volume.pool.name, "uuid" => volume.pool.id}, "xml" => xml, "flags" => 0})
+         {:ok, libvirt_volume} <- Libvirt.storage_vol_create_xml_from(socket, %{"clonevol" => %{"pool" => base_image.pool.name, "name" => base_image.id, "key" => base_image.key}, "pool" => %{"name" => volume.pool.name, "uuid" => volume.pool.id}, "xml" => xml, "flags" => 0}),
+         {:ok, _} <- Libvirt.storage_vol_resize(socket, %{"vol" => libvirt_volume["remote_nonnull_storage_vol"], "capacity" => volume.capacity_bytes, "flags" => 0})
     do
-      {:ok, volume}
+      {:ok, libvirt_volume}
     end
   end
 
@@ -89,6 +99,7 @@ defmodule Virt.Libvirt.Volumes do
 
     {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
     Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
+    {:ok, vol}
   end
 
   @doc """
@@ -108,6 +119,15 @@ defmodule Virt.Libvirt.Volumes do
          {:ok, volume} <- Repo.delete(volume)
     do
       {:ok, volume}
+    else
+      {:error, packet} ->
+        # also delete volume if storage pool does not exist
+        if packet.payload =~ "VIR_ERR_NO_STORAGE_POOL" do
+          Repo.delete(volume)
+        else
+          {:error, packet}
+        end
+      error -> {:error, error}
     end
   end
 

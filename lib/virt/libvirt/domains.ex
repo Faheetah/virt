@@ -58,7 +58,7 @@ defmodule Virt.Libvirt.Domains do
         {:error, error, domain}
       {:error, :econnrefused} ->
         {:error, "Could not connect to Libvirt host #{domain.host.connection_string}"}
-      error -> error
+      error -> {:error, error, domain}
     end
   end
 
@@ -88,6 +88,15 @@ defmodule Virt.Libvirt.Domains do
          {:ok, nil} <- Libvirt.domain_destroy(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}})
     do
       :ok
+    else
+      {:error, packet} ->
+        # also delete volume if storage pool does not exist
+        if packet.payload =~ "VIR_ERR_NO_DOMAIN" do
+          Repo.delete(domain)
+        else
+          {:error, packet}
+        end
+      error -> {:error, error}
     end
   end
 
