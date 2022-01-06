@@ -21,6 +21,14 @@ defmodule VirtWeb.Router do
     get "/ci/:id/meta-data", CloudInitController, :metadata
     get "/ci/:id/user-data", CloudInitController, :userdata
     get "/ci/:id/vendor-data", CloudInitController, :vendordata
+
+
+    live "/hosts", HostLive.Index, :index
+    live "/hosts/new", HostLive.Index, :new
+    live "/hosts/:id/edit", HostLive.Index, :edit
+
+    live "/hosts/:id", HostLive.Show, :show
+    live "/hosts/:id/show/edit", HostLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

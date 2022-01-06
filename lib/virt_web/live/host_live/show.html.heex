@@ -1,0 +1,57 @@
+<h1>Show Host</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal VirtWeb.HostLive.FormComponent,
+    id: @host.id,
+    title: @page_title,
+    action: @live_action,
+    host: @host,
+    return_to: Routes.host_show_path(@socket, :show, @host) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @host.name %>
+  </li>
+
+  <li>
+    <strong>Connection string:</strong>
+    <%= @host.connection_string %>
+  </li>
+
+</ul>
+
+<h2>Distributions</h2>
+<ul>
+<%= for hd <- @host.host_distributions do %>
+  <li>
+    <b><%= hd.distribution.key %> :</b> <%= hd.distribution.name %> (V:<%= hd.volume.id %>)
+  </li>
+<% end %>
+</ul>
+
+<strong>Pools</strong>
+<ul>
+<%= for pool <- @host.pools do %>
+
+  <li>
+    <%= pool.name %>
+    <%# <%= live_redirect pool.name, to: Routes.pool_show_path(@socket, :show) %>
+  </li>
+
+<% end %>
+</ul>
+
+<h2>Domains</h2>
+<ul>
+<%= for domain <- @host.domains do %>
+<li>
+  <%= domain.name %>
+</li>
+<% end %>
+</ul>
+
+<span><%= live_patch "Edit", to: Routes.host_show_path(@socket, :edit, @host), class: "button" %></span> |
+<span><%= live_redirect "Back", to: Routes.host_index_path(@socket, :index) %></span>
