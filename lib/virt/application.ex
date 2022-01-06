@@ -15,9 +15,10 @@ defmodule Virt.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Virt.PubSub},
       # Start the Endpoint (http/https)
-      VirtWeb.Endpoint
+      VirtWeb.Endpoint,
       # Start a worker by calling: Virt.Worker.start_link(arg)
       # {Virt.Worker, arg}
+      {Task.Supervisor, name: Virt.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -28,19 +28,10 @@ defmodule Virt.Libvirt.Volumes do
   """
   def get_volume_by_name!(name), do: Repo.get_by(Volume, name: name)
 
-  def maybe_get_volume_by_name!(nil), do: nil
-  def maybe_get_volume_by_name!(name) do
-    Volume
-    |> Repo.get_by(name: name)
-    |> Repo.preload([:pool])
-  end
-
   @doc """
   Creates a volume.
   """
-  def create_volume(attrs, base_image_name \\ nil) do
-    base_image = maybe_get_volume_by_name!(base_image_name)
-
+  def create_volume(attrs, base_image \\ nil) do
     with changeset <- Volume.changeset(%Volume{}, attrs),
          {:ok, volume} <- Repo.insert(changeset),
          volume <- Repo.preload(volume, [pool: [:host]]),
@@ -85,6 +76,7 @@ defmodule Virt.Libvirt.Volumes do
     unless File.exists?("images/#{to}") do
       {:ok, :saved_to_file} = :httpc.request(:get, {String.to_charlist(url), []}, [], [stream: String.to_charlist("images/#{to}")])
     end
+    {:ok, "images/#{to}"}
   end
 
  def create_base_image(%{"url" => url, "name" => name} = attrs) do

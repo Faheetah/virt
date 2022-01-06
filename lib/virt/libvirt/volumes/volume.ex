@@ -6,6 +6,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Domains.DomainDisk
+  alias Virt.Libvirt.Hosts.HostDistribution
   alias Virt.Libvirt.Pools.Pool
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -18,6 +19,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
     field :created, :boolean, default: false
     belongs_to :pool, Pool
     has_one :domain_disk, DomainDisk, on_delete: :delete_all
+    has_one :host_distribution, HostDistribution
 
     timestamps()
   end

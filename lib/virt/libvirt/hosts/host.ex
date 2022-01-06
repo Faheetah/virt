@@ -7,6 +7,7 @@ defmodule Virt.Libvirt.Hosts.Host do
   import Ecto.Changeset
   alias Virt.Libvirt.Pools.Pool
   alias Virt.Libvirt.Domains.Domain
+  alias Virt.Libvirt.Hosts.HostDistribution
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -15,6 +16,7 @@ defmodule Virt.Libvirt.Hosts.Host do
     field :name, :string
     has_many :pools, Pool
     has_many :domains, Domain
+    has_many :host_distributions, HostDistribution
 
     timestamps()
   end
@@ -23,6 +25,7 @@ defmodule Virt.Libvirt.Hosts.Host do
   def changeset(host, attrs) do
     host
     |> cast(attrs, [:name, :connection_string])
+    |> cast_assoc(:host_distributions)
     |> validate_required([:name, :connection_string])
     |> unique_constraint([:name, :connection_string])
   end

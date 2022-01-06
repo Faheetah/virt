@@ -31,7 +31,7 @@ defmodule Virt.Libvirt.Pools do
   Gets a pool by name
   """
   def get_pool_by_name!(host_id, name) do
-    Repo.get_by(Pool, name: name)
+    Repo.get_by(Pool, name: name, host_id: host_id)
   end
 
   @doc """
