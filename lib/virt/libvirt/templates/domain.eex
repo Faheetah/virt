@@ -40,6 +40,11 @@
       <target type='serial' port='0'/>
     </console>
 
+    <%#
+      We might not need the user interface since 169.254.169.254 will be link local
+      Might be able to just drop it and use the default bridge interface to bootstrap
+      Could possibly still pass the <ip address='169 ... part in for initial bootstrap if needed
+    %>
     <%= for interface <- domain.domain_interfaces do %>
     <interface type='<%= interface.type%>'>
       <mac address='<%= interface.mac %>'/>
