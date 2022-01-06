@@ -18,6 +18,7 @@ defmodule Virt.CloudInit.Metadata do
       "hostname" => server.name,
       "network-interfaces" => generate_network_interfaces(server.interfaces)
     }
+    |> Jason.encode!()
   end
 
   def generate_network_interfaces([]), do: nil

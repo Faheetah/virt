@@ -18,7 +18,9 @@ defmodule VirtWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/cloud-init/metadata", CloudInitController, :metadata
+    get "/ci/:id/meta-data", CloudInitController, :metadata
+    get "/ci/:id/user-data", CloudInitController, :userdata
+    get "/ci/:id/vendor-data", CloudInitController, :vendordata
   end
 
   # Other scopes may use custom stacks.
