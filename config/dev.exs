@@ -1,7 +1,9 @@
 import Config
 
-# config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Direct
-config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Test
+# note that any libvirt state changed in Test will only apply for the lifetime
+# of that process, for persistent state use Direct in a sandbox
+# config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Test
+config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Direct
 
 # Configure your database
 config :virt, Virt.Repo,
