@@ -90,7 +90,11 @@ defmodule Virt.Libvirt.Volumes do
       |> Virt.Repo.preload(pool: [:host])
 
     {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
-    Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
+
+    if Keyword.get(Application.fetch_env!(:libvirt, :rpc), :backend) != Libvirt.RPC.Backends.Test do
+      Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
+    end
+
     {:ok, vol}
   end
 
