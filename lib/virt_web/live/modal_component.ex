@@ -1,4 +1,6 @@
 defmodule VirtWeb.ModalComponent do
+  @moduledoc false
+
   use VirtWeb, :live_component
 
   @impl true

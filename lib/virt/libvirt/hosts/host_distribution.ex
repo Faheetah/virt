@@ -1,4 +1,6 @@
 defmodule Virt.Libvirt.Hosts.HostDistribution do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 

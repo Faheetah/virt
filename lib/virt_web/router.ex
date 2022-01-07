@@ -29,6 +29,13 @@ defmodule VirtWeb.Router do
 
     live "/hosts/:id", HostLive.Show, :show
     live "/hosts/:id/show/edit", HostLive.Show, :edit
+
+    live "/domains", DomainLive.Index, :index
+    live "/domains/new", DomainLive.Index, :new
+    live "/domains/:id/edit", DomainLive.Index, :edit
+
+    live "/domains/:id", DomainLive.Show, :show
+    live "/domains/:id/show/edit", DomainLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

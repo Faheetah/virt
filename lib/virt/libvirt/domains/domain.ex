@@ -8,14 +8,13 @@ defmodule Virt.Libvirt.Domains.Domain do
   alias Virt.Libvirt.Domains.DomainDisk
   alias Virt.Libvirt.Domains.DomainInterface
   alias Virt.Libvirt.Hosts.Host
-  alias Virt.Libvirt.Volumes.Volume
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "domains" do
-    field :memory_bytes, :integer
     field :name, :string
     field :vcpus, :integer
+    field :memory_bytes, :integer
     field :created, :boolean, default: false
     belongs_to :host, Host
     has_many :domain_disks, DomainDisk, on_delete: :delete_all

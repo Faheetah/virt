@@ -1,9 +1,9 @@
-defmodule VirtWeb.HostLive.Show do
+defmodule VirtWeb.DomainLive.Show do
   @moduledoc false
 
   use VirtWeb, :live_view
 
-  alias Virt.Libvirt.Hosts
+  alias Virt.Libvirt.Domains
 
   @impl true
   def mount(_params, _session, socket) do
@@ -15,9 +15,9 @@ defmodule VirtWeb.HostLive.Show do
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:host, Virt.Repo.preload(Hosts.get_host!(id), [:pools, :domains, host_distributions: [:volume, :distribution]]))}
+     |> assign(:domain, Domains.get_domain!(id))}
   end
 
-  defp page_title(:show), do: "Show Host"
-  defp page_title(:edit), do: "Edit Host"
+  defp page_title(:show), do: "Show Domain"
+  defp page_title(:edit), do: "Edit Domain"
 end

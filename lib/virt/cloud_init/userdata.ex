@@ -52,7 +52,7 @@ defmodule Virt.CloudInit.Userdata do
     [addr, mask] = String.split(ip, "/")
     {mask_bits, _} = Integer.parse(mask)
     {:ok, parsed_addr} = Virt.Ecto.Type.IPv4.dump(addr)
-    gateway = 4294967296 - Integer.pow(2, 32 - mask_bits)
+    gateway = 4_294_967_296 - Integer.pow(2, 32 - mask_bits)
     Virt.Ecto.Type.IPv4.load(Bitwise.band(gateway, parsed_addr) + 1)
     |> then(fn {:ok, f} -> f end)
   end

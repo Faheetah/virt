@@ -1,0 +1,37 @@
+<h1>Show Domain</h1>
+
+<%= if @live_action in [:edit] do %>
+  <%= live_modal VirtWeb.DomainLive.FormComponent,
+    id: @domain.id,
+    title: @page_title,
+    action: @live_action,
+    domain: @domain,
+    return_to: Routes.domain_show_path(@socket, :show, @domain) %>
+<% end %>
+
+<ul>
+
+  <li>
+    <strong>Name:</strong>
+    <%= @domain.name %>
+  </li>
+
+  <li>
+    <strong>Vcpus:</strong>
+    <%= @domain.vcpus %>
+  </li>
+
+  <li>
+    <strong>Memory bytes:</strong>
+    <%= @domain.memory_bytes %>
+  </li>
+
+  <li>
+    <strong>Created:</strong>
+    <%= @domain.created %>
+  </li>
+
+</ul>
+
+<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @domain.id, data: [confirm: "Are you sure?"] %></span>
+<span><%= live_redirect "Back", to: Routes.domain_index_path(@socket, :index) %></span>

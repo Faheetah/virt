@@ -1,0 +1,40 @@
+<h1>Listing Domains</h1>
+
+<%= if @live_action in [:new, :edit] do %>
+  <%= live_modal VirtWeb.DomainLive.FormComponent,
+    id: @domain.id || :new,
+    title: @page_title,
+    action: @live_action,
+    domain: @domain,
+    return_to: Routes.domain_index_path(@socket, :index) %>
+<% end %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Vcpus</th>
+      <th>Memory bytes</th>
+      <th>Created</th>
+
+      <th></th>
+    </tr>
+  </thead>
+  <tbody id="domains">
+    <%= for domain <- @domains do %>
+      <tr id={"domain-#{domain.id}"}>
+        <td><%= domain.name %></td>
+        <td><%= domain.vcpus %></td>
+        <td><%= domain.memory_bytes %></td>
+        <td><%= domain.created %></td>
+
+        <td>
+          <span><%= live_redirect "Show", to: Routes.domain_show_path(@socket, :show, domain) %></span>
+          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: domain.id, data: [confirm: "Are you sure?"] %></span>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<span><%= live_patch "New Domain", to: Routes.domain_index_path(@socket, :new) %></span>

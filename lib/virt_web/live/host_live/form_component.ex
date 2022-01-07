@@ -1,4 +1,6 @@
 defmodule VirtWeb.HostLive.FormComponent do
+  @moduledoc false
+
   use VirtWeb, :live_component
 
   alias Virt.Libvirt.Hosts

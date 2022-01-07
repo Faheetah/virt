@@ -1,4 +1,6 @@
 defmodule VirtWeb.HostLive.Index do
+  @moduledoc false
+
   use VirtWeb, :live_view
 
   alias Virt.Libvirt.Hosts

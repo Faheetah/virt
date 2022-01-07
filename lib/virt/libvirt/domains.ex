@@ -9,6 +9,8 @@ defmodule Virt.Libvirt.Domains do
   alias Virt.Repo
 
   alias Virt.Libvirt.Domains.Domain
+  alias Virt.Libvirt.Hosts
+  alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Templates
 
   @doc """
@@ -29,7 +31,18 @@ defmodule Virt.Libvirt.Domains do
   Creates a domain.
   """
   def create_domain(attrs \\ %{}) do
-    with changeset <- Domain.changeset(%Domain{}, attrs),
+    host = find_host(attrs)
+
+    attrs =
+      attrs
+      |> Map.put("domain_interfaces", [
+        %{type: "user", mac: gen_mac(), ip: "169.254.0.1/24"},
+        %{type: "bridge", mac: gen_mac(), bridge: "br0", ip: attrs["primary_ip_cidr"]}
+      ])
+      |> Map.put("domain_disks", create_domain_disks(host, attrs))
+      |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
+
+    with changeset <- Domain.changeset(%Domain{}, Map.put(attrs, "host_id", host.id)),
          {:ok, domain} <- Repo.insert(changeset),
          domain <- Repo.preload(domain, [:host, :domain_interfaces, domain_disks: [:volume]]),
          {:ok, _} <- create_libvirt_domain(domain),
@@ -45,6 +58,35 @@ defmodule Virt.Libvirt.Domains do
         delete_domain(domain)
         {:error, error}
     end
+  end
+
+  defp get_int(val), do: elem(Integer.parse(val), 0)
+
+  defp gen_mac do
+    suffix =
+      <<:rand.uniform(255), :rand.uniform(255), :rand.uniform(255)>>
+      |> Base.encode16(case: :lower)
+      |> String.to_charlist()
+      |> Enum.chunk_every(2)
+      |> Enum.join(":")
+    "b0:0b:1e:" <> suffix
+  end
+
+  defp create_domain_disks(host, %{"primary_disk_size_mb" => primary_size, "distribution" => distribution}) do
+    host_distribution =
+      Virt.Libvirt.Hosts.HostDistribution
+      |> Virt.Repo.one(where: [host_id: host.id, distribution: [name: distribution]])
+      |> Virt.Repo.preload([volume: [:pool]])
+
+    pool = Pools.get_pool_by_name!(host.id, "customer_images")
+    {:ok, volume} = Virt.Libvirt.Volumes.create_volume(%{type: "qcow2", capacity_bytes: get_int(primary_size)*1024*1024, pool_id: pool.id}, host_distribution.volume)
+    [%{device: "hda", volume_id: volume.id}]
+  end
+
+  # this will be capacity assignment in the future, for now just throw it on the first host
+  # this obviously won't stay this way long term
+  def find_host(_) do
+    Hosts.list_hosts() |> hd
   end
 
   defp create_libvirt_domain(domain) do
@@ -85,7 +127,7 @@ defmodule Virt.Libvirt.Domains do
   defp delete_libvirt_domain(domain) do
     with domain <- Repo.preload(domain, [:host]),
          {:ok, socket} <- Libvirt.connect(domain.host.connection_string),
-         {:ok, nil} <- Libvirt.domain_destroy(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}})
+         {:ok, nil} <- Libvirt.domain_destroy(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}}) # don't think "id" is necessary
     do
       :ok
     else
