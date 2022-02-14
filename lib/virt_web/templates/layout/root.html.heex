@@ -10,13 +10,26 @@
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
   <body class="h-full w-full flex flex-row">
-    <div class="w-full h-full basis-1/4">
+    <div class="w-full h-full basis-1/5">
       <%= render("menu.html") %>
     </div>
 
     <div class="h-full w-full">
-      <div class="border-b p-4">
-        top bar stuff
+      <div class="grid grid-cols-2 border-b border-gray-300 bg-neutral-100">
+        <div class="p-4 text-xl">
+          <svg class="inline w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+          Top bar stuff
+        </div>
+
+        <div class="justify-self-end space-x-4 p-4">
+          <a href="#notifications">
+            <svg class="inline w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+          </a>
+
+          <a href="#logout">
+            <svg class="inline w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+          </a>
+        </div>
       </div>
       <%= @inner_content %>
     </div>

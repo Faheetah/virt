@@ -1,4 +1,10 @@
-<h1>Listing Hosts</h1>
+<div class="mb-8 grid grid-cols-2">
+  <div class="text-4xl">Hosts</div>
+
+  <div class="justify-self-end py-2">
+    <%= live_patch "Add Host", to: Routes.host_index_path(@socket, :new), class: "px-4 py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300" %>
+  </div>
+</div>
 
 <%= if @live_action in [:new, :edit] do %>
   <%= live_modal VirtWeb.HostLive.FormComponent,
@@ -9,29 +15,9 @@
     return_to: Routes.host_index_path(@socket, :index) %>
 <% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Connection string</th>
+<div class="grid grid-cols">
+  <%= for host <- @hosts do %>
+    <%= live_component @socket, VirtWeb.HostLive.HostComponent, socket: @socket, host: host %>
+  <% end %>
+</div>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody id="hosts">
-    <%= for host <- @hosts do %>
-      <tr id={"host-#{host.id}"}>
-        <td><%= host.name %></td>
-        <td><%= host.connection_string %></td>
-
-        <td>
-          <span><%= live_redirect "Show", to: Routes.host_show_path(@socket, :show, host) %></span>
-          <span><%= live_patch "Edit", to: Routes.host_index_path(@socket, :edit, host) %></span>
-          <span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: host.id, data: [confirm: "Are you sure?"] %></span>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
-
-<span><%= live_patch "New Host", to: Routes.host_index_path(@socket, :new) %></span>
