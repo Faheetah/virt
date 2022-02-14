@@ -17,9 +17,11 @@ defmodule VirtWeb.HostLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    host = Hosts.get_host!(id)
+
     socket
-    |> assign(:page_title, "Edit Host")
-    |> assign(:host, Hosts.get_host!(id))
+    |> assign(:page_title, "Edit #{host.name}")
+    |> assign(:host, host)
   end
 
   defp apply_action(socket, :new, _params) do
@@ -30,7 +32,6 @@ defmodule VirtWeb.HostLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Hosts")
     |> assign(:host, nil)
   end
 

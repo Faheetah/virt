@@ -8,12 +8,13 @@
 
   <div class="text-gray-400 text-lg p-4">User</div>
 
-  <%= render("menu_item.html", link: "/hosts", title: "HOSTS") %>
   <%= render("menu_item.html", link: "/domains", title: "DOMAINS") %>
-  <%= render("menu_item.html", link: "/networks", title: "NETWORKS") %>
-  <%= render("menu_item.html", link: "/storage", title: "STORAGE") %>
 
   <div class="text-gray-400 text-lg p-4">Admin</div>
+
+  <%= render("menu_item.html", link: "/hosts", title: "HOSTS") %>
+
+  <div class="text-gray-400 text-lg p-4">System</div>
 
   <%= render("menu_item.html", link: "/dashboard", title: "SYSTEM STATS") %>
 </div>

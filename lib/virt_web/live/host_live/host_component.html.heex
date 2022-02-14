@@ -1,7 +1,7 @@
 <tr class="border border-gray-300">
   <td class="p-2 text-sm flex">
-    <%= live_redirect to: Routes.host_show_path(@socket, :show, @host), class: "pr-2 text-gray-600" do %>
-      <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <%= live_redirect to: Routes.host_show_path(@socket, :show, @host), class: "pr-2 text-green-600" do %>
+      <svg class={"w-10 h-10 #{@host.status}"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
       </svg>
     <% end %>
@@ -24,15 +24,15 @@
 
   <td class="">
     <%= live_patch to: Routes.host_index_path(@socket, :edit, @host), class: "ml-2" do %>
-      <svg class="inline w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <svg class="inline w-8 h-8 fill-yellow-300 stroke-yellow-800" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
       </svg>
     <% end %>
   </td>
   <td class="pr-2">
     <%= link to: "#", phx_click: "delete", phx_value_id: @host.id, data: [confirm: "Are you sure?"], class: "ml-2" do %>
-      <svg class="inline w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
     <% end %>
   </td>

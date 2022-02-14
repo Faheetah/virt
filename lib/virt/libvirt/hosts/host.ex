@@ -14,6 +14,7 @@ defmodule Virt.Libvirt.Hosts.Host do
   schema "hosts" do
     field :connection_string, :string
     field :name, :string
+    field :status, :string
     has_many :pools, Pool
     has_many :domains, Domain
     has_many :host_distributions, HostDistribution
@@ -24,9 +25,9 @@ defmodule Virt.Libvirt.Hosts.Host do
   @doc false
   def changeset(host, attrs) do
     host
-    |> cast(attrs, [:name, :connection_string])
+    |> cast(attrs, [:name, :connection_string, :status])
     |> cast_assoc(:host_distributions)
-    |> validate_required([:name, :connection_string])
+    |> validate_required([:name, :connection_string, :status])
     |> unique_constraint([:name, :connection_string])
   end
 end

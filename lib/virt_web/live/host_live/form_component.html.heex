@@ -1,5 +1,5 @@
 <div>
-  <h2><%= @title %></h2>
+  <div class="text-4xl"><%= @title %></div>
 
   <.form
     let={f}
@@ -7,17 +7,28 @@
     id="host-form"
     phx-target={@myself}
     phx-change="validate"
-    phx-submit="save">
-  
-    <%= label f, :name %>
-    <%= text_input f, :name %>
-    <%= error_tag f, :name %>
-  
-    <%= label f, :connection_string %>
-    <%= text_input f, :connection_string %>
-    <%= error_tag f, :connection_string %>
-  
-    <div>
+    phx-submit="save"
+    class="text-lg">
+
+    <div class="mt-4">
+      <%= label f, :name, class: "font-bold block" %>
+      <%= text_input f, :name, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :name %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :connection_string, class: "font-bold block" %>
+      <%= text_input f, :connection_string, class: "border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :connection_string %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :status, class: "font-bold block" %>
+      <%= text_input f, :status, class: "border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :status %>
+    </div>
+
+    <div class="inline-block mt-4 px-4 py-2 border rounded border-gray-600 bg-gray-600 text-gray-300">
       <%= submit "Save", phx_disable_with: "Saving..." %>
     </div>
   </.form>

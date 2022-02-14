@@ -1,5 +1,3 @@
-<h1>Show Host</h1>
-
 <%= if @live_action in [:edit] do %>
   <%= live_modal VirtWeb.HostLive.FormComponent,
     id: @host.id,
@@ -9,49 +7,45 @@
     return_to: Routes.host_show_path(@socket, :show, @host) %>
 <% end %>
 
-<ul>
+<div class="text-4xl mb-8">
+  <%= @host.name %>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @host.name %>
-  </li>
+  <%= live_patch to: Routes.host_show_path(@socket, :edit, @host) do %>
+    <svg class="inline w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+    </svg>
+  <% end %>
+</div>
 
-  <li>
-    <strong>Connection string:</strong>
-    <%= @host.connection_string %>
-  </li>
+<div class="font-bold text-xl mt-4">Details</div>
+<div class="px-4 py">
+  <strong>Name:</strong>
+  <%= @host.name %>
+</div>
 
-</ul>
+<div class="px-4 py">
+  <strong>Connection string:</strong>
+  <%= @host.connection_string %>
+</div>
 
-<h2>Distributions</h2>
-<ul>
+<div class="font-bold text-xl mt-4">Distributions</div>
 <%= for hd <- @host.host_distributions do %>
-  <li>
-    <b><%= hd.distribution.key %> :</b> <%= hd.distribution.name %> (V:<%= hd.volume.id %>)
-  </li>
+  <div class="px-4 py">
+    <strong><%= hd.distribution.key %> :</strong> <%= hd.distribution.name %> (V:<%= hd.volume.id %>)
+  </div>
 <% end %>
-</ul>
 
-<strong>Pools</strong>
-<ul>
+<div class="font-bold text-xl mt-4">Pools</div>
 <%= for pool <- @host.pools do %>
-
-  <li>
+  <div class="px-4 py">
     <%= pool.name %>
     <%# <%= live_redirect pool.name, to: Routes.pool_show_path(@socket, :show) %>
-  </li>
-
+  </div>
 <% end %>
-</ul>
 
-<h2>Domains</h2>
-<ul>
+<div class="font-bold text-xl mt-4">Domains</div>
 <%= for domain <- @host.domains do %>
-<li>
-  <%= domain.name %>
-</li>
+  <div class="px-4 py">
+    <%= domain.name %>
+  </div>
 <% end %>
-</ul>
-
-<span><%= live_patch "Edit", to: Routes.host_show_path(@socket, :edit, @host), class: "button" %></span> |
-<span><%= live_redirect "Back", to: Routes.host_index_path(@socket, :index) %></span>

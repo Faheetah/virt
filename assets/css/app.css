@@ -33,7 +33,6 @@
 .invalid-feedback {
   color: #a94442;
   display: block;
-  margin: -1rem 0 2rem;
 }
 
 /* LiveView specific classes for your customization */
@@ -87,4 +86,14 @@
   color: black;
   text-decoration: none;
   cursor: pointer;
+}
+
+.ONLINE {
+  @apply fill-lime-100;
+  @apply stroke-lime-800;
+}
+
+.OFFLINE {
+  @apply fill-red-100;
+  @apply stroke-red-600;
 }

@@ -6,6 +6,7 @@ defmodule Virt.Repo.Migrations.CreateHosts do
       add :id, :binary_id, primary_key: true
       add :name, :string, null: false
       add :connection_string, :string, null: false
+      add :status, :string, null: false
 
       timestamps()
     end
