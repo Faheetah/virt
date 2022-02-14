@@ -1,0 +1,14 @@
+<div class="h-full bg-neutral-900 text-gray-300">
+  <a href="/" class="p-4 hover:bg-neutral-800 block text-2xl">¯\_(ツ)_/¯ Virt</a>
+
+  <div class="text-gray-400 text-lg p-4">User</div>
+
+  <%= render("menu_item.html", link: "/hosts", title: "HOSTS") %>
+  <%= render("menu_item.html", link: "/domains", title: "DOMAINS") %>
+  <%= render("menu_item.html", link: "/networks", title: "NETWORKS") %>
+  <%= render("menu_item.html", link: "/storage", title: "STORAGE") %>
+
+  <div class="text-gray-400 text-lg p-4">Admin</div>
+
+  <%= render("menu_item.html", link: "/dashboard", title: "SYSTEM STATS") %>
+</div>

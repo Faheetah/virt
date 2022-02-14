@@ -17,11 +17,11 @@ defmodule VirtWeb.Router do
   scope "/", VirtWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
     get "/ci/:id/meta-data", CloudInitController, :metadata
     get "/ci/:id/user-data", CloudInitController, :userdata
     get "/ci/:id/vendor-data", CloudInitController, :vendordata
 
+    live "/", DashboardLive.Index, :index
 
     live "/hosts", HostLive.Index, :index
     live "/hosts/new", HostLive.Index, :new
