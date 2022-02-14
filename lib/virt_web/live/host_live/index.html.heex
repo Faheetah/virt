@@ -15,9 +15,18 @@
     return_to: Routes.host_index_path(@socket, :index) %>
 <% end %>
 
-<div class="grid grid-cols">
-  <%= for host <- @hosts do %>
-    <%= live_component @socket, VirtWeb.HostLive.HostComponent, socket: @socket, host: host %>
-  <% end %>
-</div>
-
+<table class="border-collapse border border-gray-300 w-full">
+  <thead class="bg-gray-100">
+    <tr class="text-left">
+      <th class="p-2">Host</th>
+      <th class="p-2">Created</th>
+      <th class="p-2 w-8"> </th>
+      <th class="p-2 w-8"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for host <- @hosts do %>
+      <%= live_component @socket, VirtWeb.HostLive.HostComponent, socket: @socket, host: host %>
+    <% end %>
+  </tbody>
+</table>
