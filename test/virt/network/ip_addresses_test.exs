@@ -10,16 +10,19 @@ defmodule Virt.Network.IpAddressesTest do
 
     @invalid_attrs %{address: nil, label: nil}
 
+    @tag :skip
     test "list_ip_addresses/0 returns all ip_addresses" do
       ip_address = ip_address_fixture()
       assert IpAddresses.list_ip_addresses() == [ip_address]
     end
 
+    @tag :skip
     test "get_ip_address!/1 returns the ip_address with given id" do
       ip_address = ip_address_fixture()
       assert IpAddresses.get_ip_address!(ip_address.id) == ip_address
     end
 
+    @tag :skip
     test "create_ip_address/1 with valid data creates a ip_address" do
       valid_attrs = %{address: 42, label: "some label"}
 
@@ -28,10 +31,12 @@ defmodule Virt.Network.IpAddressesTest do
       assert ip_address.label == "some label"
     end
 
+    @tag :skip
     test "create_ip_address/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = IpAddresses.create_ip_address(@invalid_attrs)
     end
 
+    @tag :skip
     test "update_ip_address/2 with valid data updates the ip_address" do
       ip_address = ip_address_fixture()
       update_attrs = %{address: 43, label: "some updated label"}
@@ -41,18 +46,21 @@ defmodule Virt.Network.IpAddressesTest do
       assert ip_address.label == "some updated label"
     end
 
+    @tag :skip
     test "update_ip_address/2 with invalid data returns error changeset" do
       ip_address = ip_address_fixture()
       assert {:error, %Ecto.Changeset{}} = IpAddresses.update_ip_address(ip_address, @invalid_attrs)
       assert ip_address == IpAddresses.get_ip_address!(ip_address.id)
     end
 
+    @tag :skip
     test "delete_ip_address/1 deletes the ip_address" do
       ip_address = ip_address_fixture()
       assert {:ok, %IpAddress{}} = IpAddresses.delete_ip_address(ip_address)
       assert_raise Ecto.NoResultsError, fn -> IpAddresses.get_ip_address!(ip_address.id) end
     end
 
+    @tag :skip
     test "change_ip_address/1 returns a ip_address changeset" do
       ip_address = ip_address_fixture()
       assert %Ecto.Changeset{} = IpAddresses.change_ip_address(ip_address)

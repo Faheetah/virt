@@ -10,16 +10,19 @@ defmodule Virt.Network.SubnetsTest do
 
     @invalid_attrs %{end: nil, label: nil, size: nil, start: nil}
 
+    @tag :skip
     test "list_subnets/0 returns all subnets" do
       subnet = subnet_fixture()
       assert Subnets.list_subnets() == [subnet]
     end
 
+    @tag :skip
     test "get_subnet!/1 returns the subnet with given id" do
       subnet = subnet_fixture()
       assert Subnets.get_subnet!(subnet.id) == subnet
     end
 
+    @tag :skip
     test "create_subnet/1 with valid data creates a subnet" do
       valid_attrs = %{end: 42, label: "some label", size: 42, start: 42}
 
@@ -30,10 +33,12 @@ defmodule Virt.Network.SubnetsTest do
       assert subnet.start == 42
     end
 
+    @tag :skip
     test "create_subnet/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Subnets.create_subnet(@invalid_attrs)
     end
 
+    @tag :skip
     test "update_subnet/2 with valid data updates the subnet" do
       subnet = subnet_fixture()
       update_attrs = %{end: 43, label: "some updated label", size: 43, start: 43}
@@ -45,18 +50,21 @@ defmodule Virt.Network.SubnetsTest do
       assert subnet.start == 43
     end
 
+    @tag :skip
     test "update_subnet/2 with invalid data returns error changeset" do
       subnet = subnet_fixture()
       assert {:error, %Ecto.Changeset{}} = Subnets.update_subnet(subnet, @invalid_attrs)
       assert subnet == Subnets.get_subnet!(subnet.id)
     end
 
+    @tag :skip
     test "delete_subnet/1 deletes the subnet" do
       subnet = subnet_fixture()
       assert {:ok, %Subnet{}} = Subnets.delete_subnet(subnet)
       assert_raise Ecto.NoResultsError, fn -> Subnets.get_subnet!(subnet.id) end
     end
 
+    @tag :skip
     test "change_subnet/1 returns a subnet changeset" do
       subnet = subnet_fixture()
       assert %Ecto.Changeset{} = Subnets.change_subnet(subnet)

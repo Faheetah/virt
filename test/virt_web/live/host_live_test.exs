@@ -16,6 +16,7 @@ defmodule VirtWeb.HostLiveTest do
   describe "Index" do
     setup [:create_host]
 
+    @tag :skip
     test "lists all hosts", %{conn: conn, host: host} do
       {:ok, _index_live, html} = live(conn, Routes.host_index_path(conn, :index))
 
@@ -23,6 +24,7 @@ defmodule VirtWeb.HostLiveTest do
       assert html =~ host.connection_string
     end
 
+    @tag :skip
     test "saves new host", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, Routes.host_index_path(conn, :index))
 
@@ -45,6 +47,7 @@ defmodule VirtWeb.HostLiveTest do
       assert html =~ "some connection_string"
     end
 
+    @tag :skip
     test "updates host in listing", %{conn: conn, host: host} do
       {:ok, index_live, _html} = live(conn, Routes.host_index_path(conn, :index))
 
@@ -67,6 +70,7 @@ defmodule VirtWeb.HostLiveTest do
       assert html =~ "some updated connection_string"
     end
 
+    @tag :skip
     test "deletes host in listing", %{conn: conn, host: host} do
       {:ok, index_live, _html} = live(conn, Routes.host_index_path(conn, :index))
 
@@ -78,6 +82,7 @@ defmodule VirtWeb.HostLiveTest do
   describe "Show" do
     setup [:create_host]
 
+    @tag :skip
     test "displays host", %{conn: conn, host: host} do
       {:ok, _show_live, html} = live(conn, Routes.host_show_path(conn, :show, host))
 
@@ -85,6 +90,7 @@ defmodule VirtWeb.HostLiveTest do
       assert html =~ host.connection_string
     end
 
+    @tag :skip
     test "updates host within modal", %{conn: conn, host: host} do
       {:ok, show_live, _html} = live(conn, Routes.host_show_path(conn, :show, host))
 

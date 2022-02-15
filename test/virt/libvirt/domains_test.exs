@@ -10,16 +10,19 @@ defmodule Virt.Libvirt.DomainsTest do
 
     @invalid_attrs %{memory_bytes: nil, name: nil, vcpus: nil}
 
+    @tag :skip
     test "list_domains/0 returns all domains" do
       domain = domain_fixture()
       assert Domains.list_domains() == [domain]
     end
 
+    @tag :skip
     test "get_domain!/1 returns the domain with given id" do
       domain = domain_fixture()
       assert Domains.get_domain!(domain.id) == domain
     end
 
+    @tag :skip
     test "create_domain/1 with valid data creates a domain" do
       valid_attrs = %{memory_bytes: 42, name: "some name", vcpus: 42}
 
@@ -29,10 +32,12 @@ defmodule Virt.Libvirt.DomainsTest do
       assert domain.vcpus == 42
     end
 
+    @tag :skip
     test "create_domain/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = Domains.create_domain(@invalid_attrs)
     end
 
+    @tag :skip
     test "update_domain/2 with valid data updates the domain" do
       domain = domain_fixture()
       update_attrs = %{memory_bytes: 43, name: "some updated name", vcpus: 43}
@@ -43,18 +48,21 @@ defmodule Virt.Libvirt.DomainsTest do
       assert domain.vcpus == 43
     end
 
+    @tag :skip
     test "update_domain/2 with invalid data returns error changeset" do
       domain = domain_fixture()
       assert {:error, %Ecto.Changeset{}} = Domains.update_domain(domain, @invalid_attrs)
       assert domain == Domains.get_domain!(domain.id)
     end
 
+    @tag :skip
     test "delete_domain/1 deletes the domain" do
       domain = domain_fixture()
       assert {:ok, %Domain{}} = Domains.delete_domain(domain)
       assert_raise Ecto.NoResultsError, fn -> Domains.get_domain!(domain.id) end
     end
 
+    @tag :skip
     test "change_domain/1 returns a domain changeset" do
       domain = domain_fixture()
       assert %Ecto.Changeset{} = Domains.change_domain(domain)
