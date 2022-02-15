@@ -17,9 +17,10 @@ defmodule VirtWeb.DomainLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    domain = Domains.get_domain!(id)
     socket
-    |> assign(:page_title, "Edit Domain")
-    |> assign(:domain, Domains.get_domain!(id))
+    |> assign(:page_title, "Edit #{domain.name}")
+    |> assign(:domain, domain)
   end
 
   defp apply_action(socket, :new, _params) do

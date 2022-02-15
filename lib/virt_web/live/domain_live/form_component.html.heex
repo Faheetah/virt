@@ -1,5 +1,5 @@
 <div>
-  <h2><%= @title %></h2>
+  <div class="text-4xl"><%= @title %></div>
 
   <.form
     let={f}
@@ -7,34 +7,47 @@
     id="domain-form"
     phx-target={@myself}
     phx-change="validate"
-    phx-submit="save">
+    phx-submit="save"
+    class="text-lg">
 
-    <%= label f, :name %>
-    <%= text_input f, :name %>
-    <%= error_tag f, :name %>
+    <div class="mt-4">
+      <%= label f, :name, class: "font-bold block" %>
+      <%= text_input f, :name, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :name %>
+    </div>
 
-    <%= label f, :vcpus %>
-    <%= number_input f, :vcpus %>
-    <%= error_tag f, :vcpus %>
+    <div class="mt-4">
+      <%= label f, :vcpus, class: "font-bold block" %>
+      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :vcpus %>
+    </div>
 
-    <%= label f, :memory_mb %>
-    <%= number_input f, :memory_mb %>
-    <%= error_tag f, :memory_mb %>
+    <div class="mt-4">
+      <%= label f, :memory_mb, class: "font-bold block" %>
+      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :memory_mb %>
+    </div>
 
-    <%= label f, :primary_disk_size_mb %>
-    <%= number_input f, :primary_disk_size_mb %>
-    <%= error_tag f, :primary_disk_size_mb %>
+    <div class="mt-4">
+      <%= label f, :primary_disk_size_mb, class: "font-bold block" %>
+      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :domain_disks %>
+    </div>
 
-    <%= label f, :distribution %>
-    <%= text_input f, :distribution %>
-    <%= error_tag f, :distribution %>
+    <div class="mt-4">
+      <%= label f, :distribution, class: "font-bold block" %>
+      <%= text_input f, :distribution, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :distribution %>
+    </div>
 
-    <%= label f, :primary_ip_cidr %>
-    <%= text_input f, :primary_ip_cidr %>
-    <%= error_tag f, :primary_ip_cidr %>
+    <div class="mt-4">
+      <%= label f, :primary_ip_cidr, class: "font-bold block" %>
+      <%= text_input f, :primary_ip_cidr, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :primary_ip_cidr %>
+    </div>
 
-    <div>
-      <%= submit "Save", phx_disable_with: "Saving..." %>
+    <div class="inline-block mt-4 rounded bg-blue-600 hover:bg-blue-500 text-blue-100">
+      <%= submit "Save", phx_disable_with: "Saving...", class: "px-4 py-2" %>
     </div>
   </.form>
 </div>

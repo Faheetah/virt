@@ -32,8 +32,8 @@ defmodule Virt.Libvirt.Volumes do
   Creates a volume.
   """
   def create_volume(attrs, base_image \\ nil) do
-    with changeset <- Volume.changeset(%Volume{}, attrs),
-         {:ok, volume} <- Repo.insert(changeset),
+    changeset = Volume.changeset(%Volume{}, attrs)
+    with {:ok, volume} <- Repo.insert(changeset),
          volume <- Repo.preload(volume, [pool: [:host]]),
          {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume, base_image),
          {:ok, volume} <- update_volume(volume, %{"created" => true, "key" => key})
@@ -45,7 +45,10 @@ defmodule Virt.Libvirt.Volumes do
 
       {:error, error, %Volume{} = volume} ->
         delete_volume(volume)
-        {:error, error}
+        {:error, Ecto.Changeset.add_error(changeset, :domain_disks, error)}
+
+      {:error, %Libvirt.RPC.Packet{} = packet} ->
+        {:error, Ecto.Changeset.add_error(changeset, :domain_disks, packet.payload)}
     end
   end
 
@@ -92,10 +95,11 @@ defmodule Virt.Libvirt.Volumes do
     {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
 
     if Keyword.get(Application.fetch_env!(:libvirt, :rpc), :backend) != Libvirt.RPC.Backends.Test do
-      Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
+      :ok = Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
+      {:ok, vol}
+    else
+      {:ok, vol}
     end
-
-    {:ok, vol}
   end
 
   @doc """

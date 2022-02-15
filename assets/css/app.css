@@ -90,7 +90,7 @@
 
 .ONLINE {
   @apply fill-lime-100;
-  @apply stroke-lime-800;
+  @apply stroke-lime-600;
 }
 
 .OFFLINE {

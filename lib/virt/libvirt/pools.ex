@@ -34,6 +34,16 @@ defmodule Virt.Libvirt.Pools do
     Repo.get_by(Pool, name: name, host_id: host_id)
   end
 
+  def get_pool_by_name(host_id, name) do
+    pool = get_pool_by_name!(host_id, name)
+
+    if pool do
+      {:ok, pool}
+    else
+      {:error, "could not find pool #{name} on host #{host_id}"}
+    end
+  end
+
   @doc """
   Creates a pool.
   """
