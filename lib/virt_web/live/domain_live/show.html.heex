@@ -1,5 +1,3 @@
-<h1>Show Domain</h1>
-
 <%= if @live_action in [:edit] do %>
   <%= live_modal VirtWeb.DomainLive.FormComponent,
     id: @domain.id,
@@ -9,29 +7,42 @@
     return_to: Routes.domain_show_path(@socket, :show, @domain) %>
 <% end %>
 
-<ul>
+<div class="text-4xl mb-8">
+  <%= @domain.name %>
+</div>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @domain.name %>
-  </li>
+<div class="font-bold text-xl mt-4">Details</div>
+<div class="px-4 py">
+  <strong>Name:</strong>
+  <%= @domain.name %>
+</div>
 
-  <li>
-    <strong>Vcpus:</strong>
-    <%= @domain.vcpus %>
-  </li>
+<div class="px-4 py">
+  <strong>VCPU:</strong>
+  <%= @domain.vcpus %>
+</div>
 
-  <li>
-    <strong>Memory bytes:</strong>
-    <%= @domain.memory_bytes %>
-  </li>
+<div class="px-4 py">
+  <strong>Memory:</strong>
+  <%= Integer.floor_div(@domain.memory_bytes, 1024*1024) %>mb
+</div>
 
-  <li>
-    <strong>Created:</strong>
-    <%= @domain.created %>
-  </li>
+<div class="font-bold text-xl mt-4">Disks</div>
+<%= for disk <- @domain.domain_disks do %>
+  <div class="px-4 py">
+    <strong><%= disk.device %> :</strong> <%= Integer.floor_div(disk.volume.capacity_bytes, 1024*1024) %>mb (<%= disk.volume.id %>)
+  </div>
+<% end %>
 
-</ul>
-
-<span><%= link "Delete", to: "#", phx_click: "delete", phx_value_id: @domain.id, data: [confirm: "Are you sure?"] %></span>
-<span><%= live_redirect "Back", to: Routes.domain_index_path(@socket, :index) %></span>
+<div class="font-bold text-xl mt-4">Interfaces</div>
+<%= for interface <- @domain.domain_interfaces do %>
+  <div class="px-4 py">
+    <strong><%= interface.mac %> :</strong> (<%= interface.id %>)
+  </div>
+  <div class="px-4 py">
+    Bridge: <%= interface.bridge %>
+  </div>
+  <div class="px-4 py">
+    IP: <%= interface.ip %>
+  </div>
+<% end %>

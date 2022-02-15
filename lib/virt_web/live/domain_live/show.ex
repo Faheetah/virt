@@ -12,10 +12,14 @@ defmodule VirtWeb.DomainLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    domain =
+      Domains.get_domain!(id)
+      |> Virt.Repo.preload([domain_disks: [:volume], domain_interfaces: []])
+
     {:noreply,
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:domain, Domains.get_domain!(id))}
+     |> assign(:domain, domain)}
   end
 
   defp page_title(:show), do: "Show Domain"

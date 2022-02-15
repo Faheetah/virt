@@ -45,5 +45,6 @@ defmodule VirtWeb.DomainLive.Index do
 
   defp list_domains do
     Domains.list_domains()
+    |> Virt.Repo.preload([domain_disks: [volume: [:host_distribution]]])
   end
 end

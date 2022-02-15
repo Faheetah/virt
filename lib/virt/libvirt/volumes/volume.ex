@@ -28,6 +28,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
   def changeset(volume, attrs) do
     volume
     |> cast(attrs, [:name, :key, :type, :capacity_bytes, :pool_id, :created])
+    |> cast_assoc(:host_distribution)
     |> validate_required([:capacity_bytes, :pool_id])
   end
 end

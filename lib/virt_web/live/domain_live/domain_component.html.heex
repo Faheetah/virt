@@ -1,0 +1,36 @@
+<tr class="border border-gray-300">
+  <td class="p-2 text-sm flex">
+    <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "pr-2" do %>
+      <svg class={"w-10 h-10 #{@domain.created}"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+    <% end %>
+
+    <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "text-gray-600 w-full" do %>
+      <div class="font-bold">
+        <%= @domain.name %>
+      </div>
+      <div>
+        <%= @domain.vcpus %> /
+        <%= Integer.floor_div(@domain.memory_bytes, 1048576) %>mb
+      </div>
+    <% end %>
+  </td>
+
+  <td class="flex-grow p-2">
+    <%= @domain.inserted_at.month %> /
+    <%= @domain.inserted_at.day %> /
+    <%= @domain.inserted_at.year %>
+  </td>
+
+  <td>
+    <%# edit %>
+  </td>
+  <td class="pr-2">
+    <%= link to: "#", phx_click: "delete", phx_value_id: @domain.id, data: [confirm: "Are you sure?"], class: "ml-2" do %>
+      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    <% end %>
+  </td>
+</tr>

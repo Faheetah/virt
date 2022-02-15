@@ -1,4 +1,4 @@
-<tr class="border border-gray-300">
+<tr id={"host-#{@host.id}"} class="border border-gray-300">
   <td class="p-2 text-sm flex">
     <%= live_redirect to: Routes.host_show_path(@socket, :show, @host), class: "pr-2" do %>
       <svg class={"w-10 h-10 #{@host.status}"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
