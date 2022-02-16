@@ -149,6 +149,13 @@ defmodule Virt.Libvirt.Volumes do
          {:ok, nil} <- Libvirt.storage_vol_delete(socket, %{"vol" => %{"pool" => volume.pool.name, "name" => volume.id, "key" => volume.key}, "flags" => 0})
     do
       :ok
+    else
+      {:error, packet} ->
+        if packet.payload =~ "VIR_ERR_NO_STORAGE_VOL" do
+          :ok
+        else
+          {:error, packet}
+        end
     end
   end
 
@@ -157,5 +164,17 @@ defmodule Virt.Libvirt.Volumes do
   """
   def change_volume(%Volume{} = volume, attrs \\ %{}) do
     Volume.changeset(volume, attrs)
+  end
+
+  def synchronize_libvirt_volume(pool_id, volume) do
+    name = volume["name"]
+    key = volume["key"]
+    Virt.Libvirt.Volumes.create_volume(%{
+      "name" => name,
+      "id" => name,
+      "key" => key,
+      "capacity_bytes" => 0,
+      "pool_id" => pool_id
+    })
   end
 end

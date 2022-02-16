@@ -55,7 +55,7 @@ defmodule Virt.Libvirt.Domains do
   def provision_domain(%Domain{} = domain) do
     domain = Repo.preload(domain, [:host, domain_disks: [:volume]])
     disks =
-      Enum.map(domain.domain_disks, fn disk ->
+      Enum.each(domain.domain_disks, fn disk ->
         provision_domain_disk(domain.host, disk)
       end)
     domain = get_domain!(domain.id)
@@ -68,8 +68,7 @@ defmodule Virt.Libvirt.Domains do
   end
 
   defp reserve_domain_disks(host, %{"primary_disk_size_mb" => primary_size, "distribution" => distribution}) do
-    with {:ok, host_distribution} <- get_host_distribution(host, distribution),
-         {:ok, pool} <- Pools.get_pool_by_name(host.id, "customer_images"),
+    with {:ok, pool} <- Pools.get_pool_by_name(host.id, "customer_images"),
          {:ok, volume} <- Virt.Libvirt.Volumes.create_volume(%{type: "qcow2", capacity_bytes: get_int(primary_size)*1024*1024, pool_id: pool.id})
     do
       [%{device: "hda", volume_id: volume.id}]
@@ -83,8 +82,6 @@ defmodule Virt.Libvirt.Domains do
 
     with {:ok, host_distribution} <-
             get_host_distribution(host, disk.volume.host_distribution),
-         {:ok, pool} <-
-            Pools.get_pool_by_name(host.id, "customer_images"),
          {:ok, volume} <-
             Virt.Libvirt.Volumes.provision_volume(disk.volume, host_distribution.volume)
     do
