@@ -26,9 +26,11 @@ defmodule Virt.Libvirt.Domains.Domain do
   @doc false
   def changeset(domain, attrs) do
     domain
-    |> cast(attrs, [:name, :memory_bytes, :vcpus, :host_id])
+    |> cast(attrs, [:name, :memory_bytes, :vcpus, :host_id, :created])
     |> cast_assoc(:domain_disks)
     |> cast_assoc(:domain_interfaces)
     |> validate_required([:name, :memory_bytes, :vcpus])
+    |> validate_inclusion(:vcpus, 1..16, message: "VCPU must be max of 16")
+    |> validate_length(:name, max: 128)
   end
 end

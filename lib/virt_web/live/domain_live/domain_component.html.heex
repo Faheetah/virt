@@ -1,9 +1,15 @@
-<tr class="border border-gray-300">
+<tr id={"domain-#{@domain.id}"} class="border border-gray-300">
   <td class="p-2 text-sm flex">
     <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "pr-2" do %>
-      <svg class={"w-10 h-10 #{if @domain.created, do: "ONLINE", else: "OFFLINE"}"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
-      </svg>
+      <%= if @domain.created do %>
+        <svg class="w-10 h-10 fill-lime-100 stroke-lime-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+        </svg>
+      <% else %>
+        <svg class="w-10 h-10 fill-yellow-100 stroke-yellow-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      <% end %>
     <% end %>
 
     <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "text-gray-600 w-full" do %>
@@ -11,10 +17,14 @@
         <%= @domain.name %>
       </div>
       <div>
-        <%= @domain.vcpus %> /
-        <%= Integer.floor_div(@domain.memory_bytes, 1048576) %>mb
+        <%= @domain.vcpus %> cpu /
+        <%= Integer.floor_div(@domain.memory_bytes, 1048576) %> mb /        <%= Integer.floor_div(hd(@domain.domain_disks).volume.capacity_bytes, 1048576) %> mb
       </div>
     <% end %>
+  </td>
+
+  <td class="flex-grow p-2">
+    <%= Enum.find(@domain.domain_interfaces, fn i -> i.bridge == "br0" end).ip %>
   </td>
 
   <td class="flex-grow p-2">

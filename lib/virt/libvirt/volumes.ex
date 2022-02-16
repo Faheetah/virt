@@ -4,6 +4,8 @@ defmodule Virt.Libvirt.Volumes do
   """
 
   import Ecto.Query, warn: false
+  require Logger
+
   alias Virt.Repo
 
   alias Virt.Libvirt.Templates
@@ -31,24 +33,31 @@ defmodule Virt.Libvirt.Volumes do
   @doc """
   Creates a volume.
   """
-  def create_volume(attrs, base_image \\ nil) do
-    changeset = Volume.changeset(%Volume{}, attrs)
-    with {:ok, volume} <- Repo.insert(changeset),
-         volume <- Repo.preload(volume, [pool: [:host]]),
-         {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume, base_image),
+  def provision_volume(volume, distribution) do
+    with volume <- Repo.preload(volume, [:host_distribution, pool: [:host]]),
+         {:ok, %{"remote_nonnull_storage_vol" => %{"key" => key}}} <- create_libvirt_volume(volume, distribution),
          {:ok, volume} <- update_volume(volume, %{"created" => true, "key" => key})
     do
       {:ok, volume}
     else
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:error, changeset}
-
       {:error, error, %Volume{} = volume} ->
+        Logger.error(error)
         delete_volume(volume)
-        {:error, Ecto.Changeset.add_error(changeset, :domain_disks, error)}
 
       {:error, %Libvirt.RPC.Packet{} = packet} ->
-        {:error, Ecto.Changeset.add_error(changeset, :domain_disks, packet.payload)}
+        Logger.error(packet)
+        delete_volume(volume)
+    end
+  end
+
+  def create_volume(attrs) do
+    changeset = Volume.changeset(%Volume{}, attrs)
+    with {:ok, volume} <- Repo.insert(changeset),
+         volume <- Repo.preload(volume, [pool: [:host]])
+    do
+      {:ok, volume}
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
@@ -89,6 +98,8 @@ defmodule Virt.Libvirt.Volumes do
       attrs
       |> Map.put("capacity_bytes", size)
       |> create_volume()
+      |> then(fn {:ok, v} -> v end)
+      |> provision_volume(nil)
       |> then(fn {:ok, v} -> v end)
       |> Virt.Repo.preload(pool: [:host])
 

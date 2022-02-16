@@ -18,7 +18,8 @@ defmodule Virt.Application do
       VirtWeb.Endpoint,
       # Start a worker by calling: Virt.Worker.start_link(arg)
       # {Virt.Worker, arg}
-      {Task.Supervisor, name: Virt.TaskSupervisor}
+      {Task.Supervisor, name: Virt.TaskSupervisor},
+      {Task.Supervisor, name: Virt.ProvisionSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

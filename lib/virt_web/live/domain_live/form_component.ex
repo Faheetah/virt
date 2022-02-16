@@ -25,6 +25,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
     {:noreply, assign(socket, :changeset, changeset)}
   end
 
+  @impl true
   def handle_event("save", %{"domain" => domain_params}, socket) do
     save_domain(socket, socket.assigns.action, domain_params)
   end
@@ -34,11 +35,17 @@ defmodule VirtWeb.DomainLive.FormComponent do
       {:ok, _domain} ->
         {:noreply,
          socket
-         |> put_flash(:info, "Domain created successfully")
+         |> put_flash(:info, "Domain request processed")
          |> push_redirect(to: socket.assigns.return_to)}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
+
+      _ ->
+        {:noreply,
+          socket
+          |> put_flash(:error, "Domain failed to provision")
+          |> push_redirect(to: socket.assigns.return_to)}
     end
   end
 end

@@ -32,7 +32,7 @@ Virt.Libvirt.Hosts.create_host(%{"name" => "colosseum.sudov.im", "connection_str
 host = Virt.Libvirt.Hosts.get_host_by_name!("colosseum.sudov.im")
 
 Virt.Libvirt.Pools.create_pool(%{name: "base_images", path: "/tmp/pool/base", type: "dir", host_id: host.id})
-Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool/cuastomer", type: "dir", host_id: host.id})
+Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool/customer", type: "dir", host_id: host.id})
 
 {:ok, distribution} =
   Virt.Libvirt.Distributions.create_distribution(%{

@@ -8,6 +8,10 @@ defmodule VirtWeb.DomainLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Virt.PubSub, "domains")
+    end
+
     {:ok, assign(socket, :domains, list_domains())}
   end
 
@@ -31,7 +35,6 @@ defmodule VirtWeb.DomainLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Domains")
     |> assign(:domain, nil)
   end
 
@@ -43,8 +46,24 @@ defmodule VirtWeb.DomainLive.Index do
     {:noreply, assign(socket, :domains, list_domains())}
   end
 
+  @impl true
+  def handle_info({:domain_deleted, domain}, socket) do
+    {
+      :noreply,
+      socket
+      |> clear_flash()
+      |> put_flash(:error, "Domain #{domain.id} failed to provision")
+      |> assign(domains: list_domains())
+    }
+  end
+
+  @impl true
+  def handle_info({:domain_provisioned, domain}, socket) do
+    {:noreply, update(socket, :domains, fn _ -> [domain] end)}
+  end
+
   defp list_domains do
     Domains.list_domains()
-    |> Virt.Repo.preload([domain_disks: [volume: [:host_distribution]]])
+    |> Virt.Repo.preload([:domain_interfaces, domain_disks: [volume: [:host_distribution]]])
   end
 end

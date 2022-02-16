@@ -5,7 +5,7 @@ host = Virt.Libvirt.Hosts.get_host_by_name!("colosseum.sudov.im")
 
 Virt.Libvirt.Pools.create_pool(%{name: "base_images", path: "/tmp/pool/base", type: "dir", host_id: host.id})
 |> IO.inspect
-Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool/cuastomer", type: "dir", host_id: host.id})
+Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool/customer", type: "dir", host_id: host.id})
 |> IO.inspect
 
 create_distribution =
