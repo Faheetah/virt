@@ -62,4 +62,31 @@ defmodule Virt.Libvirt.Hosts do
   def change_host(%Host{} = host, attrs \\ %{}) do
     Host.changeset(host, attrs)
   end
+
+  def get_libvirt_stats(%Host{} = host) do
+    {:ok, socket} = Libvirt.connect(host.connection_string)
+    args = %{"need_results" => 1, "flags" => 0}
+    {:ok, %{"domains" => domains}} = Libvirt.connect_list_all_domains(socket, args)
+    {:ok, %{"ifaces" => interfaces}} = Libvirt.connect_list_all_interfaces(socket, args)
+    {:ok, %{"nets" => networks}} = Libvirt.connect_list_all_networks(socket, args)
+    {:ok, %{"pools" => pools}} = Libvirt.connect_list_all_storage_pools(socket, args)
+
+    %{
+      domains: domains,
+      interfaces: interfaces,
+      networks: networks,
+      pools: Enum.map(pools, &get_libvirt_volumes(socket, &1))
+    }
+  end
+
+  defp get_libvirt_volumes(socket, pool) do
+    args = %{
+      "pool" => pool,
+      "need_results" => 1,
+      "flags" => 0
+    }
+
+    {:ok, %{"vols" => volumes}} = Libvirt.storage_pool_list_all_volumes(socket, args)
+    Map.put(pool, :volumes, volumes)
+  end
 end

@@ -49,3 +49,38 @@
     <%= domain.name %>
   </div>
 <% end %>
+
+<div class="font-bold text-xl mt-4">Libvirt Domains</div>
+<%= for domain <- @libvirt_stats.domains do %>
+<div class="px-4 py">
+<%= domain["name"] %> <%= domain["uuid"] %>
+</div>
+<% end %>
+
+<div class="font-bold text-xl mt-4">Libvirt Interfaces</div>
+<%= for interface <- @libvirt_stats.interfaces do %>
+<div class="px-4 py">
+<%= interface["name"] %> <%= interface["mac"] %>
+</div>
+<% end %>
+
+<div class="font-bold text-xl mt-4">Libvirt Networks</div>
+<%= for network <- @libvirt_stats.networks do %>
+<div class="px-4 py">
+<%= network["name"] %> <%= network["uuid"] %>
+</div>
+<% end %>
+
+<div class="font-bold text-xl mt-4">Libvirt Pools</div>
+<%= for pool <- @libvirt_stats.pools do %>
+  <div class="px-4 py">
+    <%= pool["name"] %> <%= pool["uuid"] %>
+  </div>
+
+  <div class="font-bold mt-4"><%= pool["name"] %> Volumes</div>
+  <%= for volume <- pool.volumes do %>
+    <div class="px-4 py">
+      <%= volume["name"] %> <%= volume["key"] %>
+    </div>
+  <% end %>
+<% end %>
