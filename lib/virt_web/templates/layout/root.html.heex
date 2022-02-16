@@ -9,12 +9,12 @@
     <link phx-track-static rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")}/>
     <script defer phx-track-static type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}></script>
   </head>
-  <body class="h-full w-full flex flex-row">
-    <div class="w-full h-full basis-1/5">
+  <body class="h-full w-full">
+    <div class="h-full w-72 fixed">
       <%= render("menu.html") %>
     </div>
 
-    <div class="h-full w-full">
+    <div class="h-full ml-72 relative w-auto">
       <div class="grid grid-cols-2 border-b border-gray-300 bg-neutral-100">
         <div class="p-4 text-xl">
           <svg class="inline w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
