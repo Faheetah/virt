@@ -41,15 +41,18 @@ defmodule Virt.Provision.Jobs do
 
   def fail_job(job, reason) do
     job
-    |> Job.changeset(%{"status" => "failed", "reason" => reason})
+    |> Job.changeset(%{"status" => "failed", "reason" => "#{inspect reason}"})
     |> Repo.update()
+    |> IO.inspect
   end
 
-  def delete_job(domain) do
-    Repo.delete(domain)
+  def delete_job(job) do
+    Repo.delete(job)
+    |> tap(& Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_deleted, &1}))
   end
 
   def delete_all() do
     Repo.delete_all(Job)
+    |> tap(& Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_deleted, &1}))
   end
 end

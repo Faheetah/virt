@@ -27,7 +27,7 @@ defmodule Virt.Provision.Job do
 
   def changeset(job, attrs) do
     job
-    |> cast(attrs, [:status, :reason, :attrs, :state, :pid])
+    |> cast(attrs, [:status, :reason, :module, :attrs, :state, :pid])
     |> validate_inclusion(:status, @valid_statuses)
   end
 end

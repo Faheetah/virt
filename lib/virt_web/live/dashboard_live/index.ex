@@ -7,11 +7,17 @@ defmodule VirtWeb.DashboardLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    socket
-    |> assign(:hosts, list_hosts())
-    |> assign(:domains, list_domains())
-    |> assign(:jobs, list_jobs())
-    |> then(& {:ok, &1})
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Virt.PubSub, "jobs")
+    end
+
+    {
+      :ok,
+      socket
+      |> assign(:hosts, list_hosts())
+      |> assign(:domains, list_domains())
+      |> assign(:jobs, list_jobs())
+    }
   end
 
   @impl true
@@ -24,6 +30,26 @@ defmodule VirtWeb.DashboardLive.Index do
     {:ok, _} = Provision.delete_job(id)
 
     {:noreply, assign(socket, :domains, list_domains())}
+  end
+
+  @impl true
+  def handle_info({:job_deleted, _}, socket) do
+    {:noreply, assign(socket, jobs: list_jobs())}
+  end
+
+  @impl true
+  def handle_info({:job_updated, job}, socket) do
+    {:noreply, update(socket, :jobs, fn jobs -> [job | jobs] end)}
+  end
+
+  @impl true
+  def handle_info({:job_created, job}, socket) do
+    {:noreply, update(socket, :jobs, fn jobs -> [job | jobs] end)}
+  end
+
+  @impl true
+  def handle_info(_, socket) do
+    {:noreply, socket}
   end
 
   defp apply_action(socket, :index, _params) do

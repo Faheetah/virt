@@ -27,14 +27,20 @@ defmodule Virt.Provision do
   # start a new provision with the provided attributes
   def run_job(job_module, attrs) do
     {:ok, job} = Jobs.create_job(job_module, job_module.init(attrs))
+    Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_created, job})
 
     {:ok, pid} = Task.Supervisor.start_child(Virt.TaskSupervisor, fn ->
+      Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_updated, job})
       # no matter the result of the job run, we need to report the status
       try do
+        {:ok, job} = Jobs.update_job_status(job, "running")
+        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_updated, job})
         Logger.info "Starting job #{job.id} #{job.module}"
         job_module.run(job)
+        |> IO.inspect
         Logger.info("Finished #{job.id} #{job.module}")
-        Jobs.update_job_status(job, "done")
+        {:ok, job} = Jobs.update_job_status(job, "done")
+        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_updated, job})
       rescue
         exception ->
           fail_job(job_module, job, exception)
@@ -54,15 +60,18 @@ defmodule Virt.Provision do
       job_module.cleanup(job)
     rescue
       exception ->
-        Jobs.update_job_status(job, "error")
+        {:ok, _} = Jobs.update_job_status(job, "error")
+        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_deleted, job})
         Logger.error("Job could not clean up #{job.id}: #{Exception.message(reason)}")
         reraise exception, __STACKTRACE__
     catch
       reason ->
-        Jobs.update_job_status(job, "error")
+        {:ok, _} = Jobs.update_job_status(job, "error")
+        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_deleted, job})
         Logger.error("Job could not clean up #{job.id}: #{Exception.message(reason)}\n#{Exception.format_stacktrace()}")
     after
-      Jobs.fail_job(job, reason)
+      {:ok, _} = Jobs.fail_job(job, reason)
+      Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_deleted, job})
       Logger.warn("Job failed with reason: #{inspect reason}")
     end
   end

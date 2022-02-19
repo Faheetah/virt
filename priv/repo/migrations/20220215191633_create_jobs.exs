@@ -7,7 +7,7 @@ defmodule Virt.Repo.Migrations.AddJobs do
       add :pid, :string
       add :module, :string
       add :status, :string
-      add :reason, :string
+      add :reason, :text
       add :state, :binary
 
       timestamps()

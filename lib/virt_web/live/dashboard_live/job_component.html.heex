@@ -1,0 +1,20 @@
+  <div id={"job-#{@job.id}"} class="mb-8">
+    <div>
+    <%= link to: "#", phx_click: "delete", phx_value_id: @job.id, class: "ml-2" do %>
+      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    <% end %>
+
+      <span class="font-bold"><%= @job.module %> :: <%= @job.id %></span> :: <%= @job.pid || "_" %> :: <%= @job.status %>
+    </div>
+    <%= if @job.status in ["failed", "error"] do %>
+      <%= if @job.reason do %>
+        <div class="p-4 my-2 bg-red-100 text-red-600 border border-red-300 font-bold"><%= @job.reason %></div>
+      <% end %>
+
+      <div class="p-4 my-2 text-neutral-800 bg-neutral-100 border border-neutral-300">
+        <%= inspect :erlang.binary_to_term(@job.state) %>
+      </div>
+    <% end %>
+  </div>
