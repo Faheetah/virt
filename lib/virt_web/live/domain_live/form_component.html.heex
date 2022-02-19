@@ -18,31 +18,31 @@
 
     <div class="mt-4">
       <%= label f, :vcpus, class: "font-bold block" %>
-      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p", value: 2 %>
       <%= error_tag f, :vcpus %>
     </div>
 
     <div class="mt-4">
       <%= label f, :memory_mb, class: "font-bold block" %>
-      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p", value: 2048 %>
       <%= error_tag f, :memory_mb %>
     </div>
 
     <div class="mt-4">
       <%= label f, :primary_disk_size_mb, class: "font-bold block" %>
-      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p", value: 2048 %>
       <%= error_tag f, :domain_disks %>
     </div>
 
     <div class="mt-4">
       <%= label f, :distribution, class: "font-bold block" %>
-      <%= text_input f, :distribution, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= text_input f, :distribution, class: "block border rounded border-gray-600 px-2 p", value: "UBUNTU_20.04" %>
       <%= error_tag f, :distribution %>
     </div>
 
     <div class="mt-4">
       <%= label f, :primary_ip_cidr, class: "font-bold block" %>
-      <%= text_input f, :primary_ip_cidr, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= text_input f, :primary_ip_cidr, class: "block border rounded border-gray-600 px-2 p", value: "192.0.2.11/24" %>
       <%= error_tag f, :primary_ip_cidr %>
     </div>
 

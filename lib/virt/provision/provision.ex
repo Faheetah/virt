@@ -15,6 +15,11 @@ defmodule Virt.Provision do
     Jobs.list_failed_jobs()
   end
 
+  def delete_job(id) do
+    Jobs.get_job!(id)
+    |> Jobs.delete_job()
+  end
+
   def restart_job(_job) do
     # include resuming state erlang:binary_to_term to attrs
   end

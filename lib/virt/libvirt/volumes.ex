@@ -43,10 +43,12 @@ defmodule Virt.Libvirt.Volumes do
       {:error, error, %Volume{} = volume} ->
         Logger.error(error)
         delete_volume(volume)
+        {:error, error}
 
       {:error, %Libvirt.RPC.Packet{} = packet} ->
         Logger.error(packet)
         delete_volume(volume)
+        {:error, packet.error}
     end
   end
 

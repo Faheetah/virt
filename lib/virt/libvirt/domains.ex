@@ -56,15 +56,18 @@ defmodule Virt.Libvirt.Domains do
     domain = Repo.preload(domain, [:host, domain_disks: [:volume]])
     disks =
       Enum.each(domain.domain_disks, fn disk ->
-        provision_domain_disk(domain.host, disk)
+        {:ok, _} = provision_domain_disk(domain.host, disk)
       end)
     domain = get_domain!(domain.id)
 
-    {:ok, _} = create_libvirt_domain(domain)
-
-    domain
-    |> Domain.changeset(%{created: true})
-    |> Repo.update()
+    with {:ok, _} <- create_libvirt_domain(domain),
+         {:ok, domain} <- Repo.update(Domain.changeset(domain, %{created: true}))
+    do
+      {
+        :ok,
+        Repo.preload(domain, [:domain_interfaces, domain_disks: [:volume]])
+      }
+    end
   end
 
   defp reserve_domain_disks(host, %{"primary_disk_size_mb" => primary_size, "distribution" => distribution}) do
@@ -85,7 +88,7 @@ defmodule Virt.Libvirt.Domains do
          {:ok, volume} <-
             Virt.Libvirt.Volumes.provision_volume(disk.volume, host_distribution.volume)
     do
-      %{disk | volume: volume}
+      {:ok, %{disk | volume: volume}}
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
       {:error, error} -> {:error, "could not create domain disk: #{error}"}

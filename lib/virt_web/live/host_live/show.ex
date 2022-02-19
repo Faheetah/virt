@@ -25,7 +25,6 @@ defmodule VirtWeb.HostLive.Show do
 
   @impl true
   def handle_event("synchronize", %{"pool-id" => pool_id, "id" => id, "key" => key}, socket) do
-    IO.inspect {pool_id, id, key}
     {:ok, _} = Virt.Libvirt.Volumes.synchronize_libvirt_volume(pool_id, %{"name" => id, "key" => key})
 
     {:noreply, socket}
