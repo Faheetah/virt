@@ -18,8 +18,8 @@ defmodule Virt.Libvirt.Distributions.Distribution do
   end
 
   @doc false
-  def changeset(distributions, attrs) do
-    distributions
+  def changeset(distribution, attrs) do
+    distribution
     |> cast(attrs, [:name, :source, :key])
     |> validate_required([:name, :source, :key])
     |> unique_constraint([:key])

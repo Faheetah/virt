@@ -1,0 +1,42 @@
+<tr id={"distribution-#{@distribution.id}"} class="border border-gray-300">
+  <td class="p-2 text-sm flex">
+      <%# this needs to swap in the SVG for the distro %>
+      <div class="pr-2">
+        <svg class={"w-10 h-10 ONLINE"} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+        </svg>
+      </div>
+
+      <div>
+        <div class="font-bold">
+          <%= @distribution.name %>
+        </div>
+        <div>
+          <%= @distribution.key %>
+        </div>
+      </div>
+  </td>
+
+  <td class="p-2"><%= @distribution.source %></td>
+
+  <td class="flex-grow p-2">
+    <%= @distribution.inserted_at.month %> /
+    <%= @distribution.inserted_at.day %> /
+    <%= @distribution.inserted_at.year %>
+  </td>
+
+  <td>
+    <%= link to: "#", phx_click: "synchronize", phx_value_id: @distribution.id, class: "ml-2" do %>
+      <svg class="inline w-8 h-8 fill-transparent stroke-yellow-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+    <% end %>
+  </td>
+  <td class="pr-2">
+    <%= link to: "#", phx_click: "delete", phx_value_id: @distribution.id, data: [confirm: "Are you sure?"], class: "ml-2" do %>
+      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    <% end %>
+  </td>
+</tr>

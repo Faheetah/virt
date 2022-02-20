@@ -22,4 +22,8 @@ defmodule VirtWeb.LiveHelpers do
     modal_opts = [id: :modal, return_to: path, component: component, opts: opts]
     live_component(VirtWeb.ModalComponent, modal_opts)
   end
+
+  def format_distribution(key) do
+    "distribution_#{key}" |> String.replace(~r/\W/u, "_")
+  end
 end

@@ -6,7 +6,7 @@ defmodule Virt.Libvirt.Hosts do
   import Ecto.Query, warn: false
   alias Virt.Repo
 
-  alias Virt.Libvirt.Hosts.Host
+  alias Virt.Libvirt.Hosts.{Host,HostDistribution}
 
   @doc """
   Returns the list of hosts.
@@ -61,6 +61,12 @@ defmodule Virt.Libvirt.Hosts do
   """
   def change_host(%Host{} = host, attrs \\ %{}) do
     Host.changeset(host, attrs)
+  end
+
+  # needs to also delete from host
+  def delete_host_distribution(host, distribution) do
+    Repo.one!(from hd in HostDistribution, where: [host_id: ^host.id, distribution_id: ^distribution.id])
+    |> Repo.delete()
   end
 
   def get_libvirt_stats(%Host{} = host) do

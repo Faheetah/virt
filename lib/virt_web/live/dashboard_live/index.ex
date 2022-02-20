@@ -43,6 +43,16 @@ defmodule VirtWeb.DashboardLive.Index do
   end
 
   @impl true
+  def handle_info({:job_completed, job}, socket) do
+    {
+      :noreply,
+      socket
+      |> put_flash(:info, "Job #{job.id} finished successfully")
+      |> assign(jobs: list_jobs())
+    }
+  end
+
+  @impl true
   def handle_info({:job_created, job}, socket) do
     {:noreply, update(socket, :jobs, fn jobs -> [job | jobs] end)}
   end

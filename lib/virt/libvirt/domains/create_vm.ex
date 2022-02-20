@@ -7,7 +7,6 @@ defmodule Virt.Jobs.CreateDomain do
   end
 
   def run(job) do
-    :timer.sleep(2000)
     Virt.Libvirt.Domains.provision_domain(job.attrs.domain)
     |> Virt.Libvirt.Domains.broadcast(:domain_provisioned)
   end

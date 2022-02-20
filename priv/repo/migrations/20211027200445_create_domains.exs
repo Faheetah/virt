@@ -7,6 +7,7 @@ defmodule Virt.Repo.Migrations.CreateDomains do
       add :name, :string, null: false
       add :vcpus, :integer, null: false
       add :memory_bytes, :bigint, null: false
+      add :distribution, :string
       add :created, :boolean, default: false
       add :host_id, references(:hosts, on_delete: :nothing, type: :binary_id)
 

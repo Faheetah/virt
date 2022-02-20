@@ -18,31 +18,38 @@
 
     <div class="mt-4">
       <%= label f, :vcpus, class: "font-bold block" %>
-      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p", value: 2 %>
+      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p" %>
       <%= error_tag f, :vcpus %>
     </div>
 
     <div class="mt-4">
       <%= label f, :memory_mb, class: "font-bold block" %>
-      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p", value: 2048 %>
+      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p" %>
       <%= error_tag f, :memory_mb %>
     </div>
 
     <div class="mt-4">
       <%= label f, :primary_disk_size_mb, class: "font-bold block" %>
-      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p", value: 2048 %>
+      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p" %>
       <%= error_tag f, :domain_disks %>
     </div>
 
-    <div class="mt-4">
-      <%= label f, :distribution, class: "font-bold block" %>
-      <%= text_input f, :distribution, class: "block border rounded border-gray-600 px-2 p", value: "UBUNTU_20.04" %>
-      <%= error_tag f, :distribution %>
-    </div>
+    <%= for distribution <- @distributions do %>
+      <div class="mt-4 inline-block">
+        <%= error_tag f, :distribution %>
+        <%= radio_button f, :distribution, distribution.key, class: "appearance-none peer" %>
+        <div class="inline-block bg-neutral-100 border border-neutral-300 peer-checked:bg-blue-100 peer-checked:border-blue-400 text-center font-bold">
+        <%= label f, format_distribution(distribution.key) do %>
+          <%= img_tag "/images/distributions/#{String.split(distribution.key, "_")|>hd}.svg", class: "w-32 h-32" %>
+          <%= distribution.name %>
+        <% end %>
+      </div>
+      </div>
+    <% end %>
 
     <div class="mt-4">
       <%= label f, :primary_ip_cidr, class: "font-bold block" %>
-      <%= text_input f, :primary_ip_cidr, class: "block border rounded border-gray-600 px-2 p", value: "192.0.2.11/24" %>
+      <%= text_input f, :primary_ip_cidr, class: "block border rounded border-gray-600 px-2 p" %>
       <%= error_tag f, :primary_ip_cidr %>
     </div>
 

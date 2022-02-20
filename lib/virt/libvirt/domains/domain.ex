@@ -16,6 +16,7 @@ defmodule Virt.Libvirt.Domains.Domain do
     field :vcpus, :integer
     field :memory_bytes, :integer
     field :memory_mb, :integer, virtual: true
+    field :distribution, :string
     field :created, :boolean, default: false
     field :primary_ip_cidr, :string, virtual: true
     belongs_to :host, Host
@@ -28,7 +29,7 @@ defmodule Virt.Libvirt.Domains.Domain do
   @doc false
   def changeset(domain, attrs) do
     domain
-    |> cast(attrs, [:name, :memory_bytes, :memory_mb, :vcpus, :host_id, :created, :primary_ip_cidr])
+    |> cast(attrs, [:name, :memory_bytes, :memory_mb, :vcpus, :distribution, :host_id, :created, :primary_ip_cidr])
     |> cast_assoc(:domain_disks)
     |> cast_assoc(:domain_interfaces)
     |> validate_required([:name, :memory_bytes, :vcpus])

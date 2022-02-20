@@ -30,6 +30,10 @@ defmodule VirtWeb.Router do
     live "/hosts/:id", HostLive.Show, :show
     live "/hosts/:id/show/edit", HostLive.Show, :edit
 
+    live "/distributions", DistributionLive.Index, :index
+    live "/distributions/new", DistributionLive.Index, :new
+    live "/distributions/:id/edit", DistributionLive.Index, :edit
+
     live "/domains", DomainLive.Index, :index
     live "/domains/new", DomainLive.Index, :new
     live "/domains/:id/edit", DomainLive.Index, :edit

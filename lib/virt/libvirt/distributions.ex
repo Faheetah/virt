@@ -20,6 +20,14 @@ defmodule Virt.Libvirt.Distributions do
     Repo.all(Distribution)
   end
 
+  def get_distribution!(id) do
+    Repo.get(Distribution, id)
+  end
+
+  def change_distribution(%Distribution{} = distribution, attrs \\ %{}) do
+    Distribution.changeset(distribution, attrs)
+  end
+
   @doc """
   Gets a single distribution by name
   """
@@ -42,47 +50,37 @@ defmodule Virt.Libvirt.Distributions do
   This will be a provisioning task later, do it ad hoc for now
   """
   def synchronize_distribution(distribution) do
-    {:ok, _} = Volumes.download_image(distribution.source, distribution.key)
-
-    Hosts.list_hosts
-    |> Enum.map(&start_transfer(&1, distribution))
+    Virt.Provision.run_job(Virt.Jobs.SynchronizeDistribution, distribution)
   end
 
-  defp start_transfer(host, distribution) do
+  def start_transfer(host, distribution) do
     host = Repo.preload(host, [:host_distributions])
 
-    Task.Supervisor.async(Virt.TaskSupervisor, fn ->
-      pool =
-        case Pools.get_pool_by_name!(host.id, "base_images") do
-          nil ->
-            Virt.Libvirt.Pools.create_pool(%{
-              name: "base_images",
-              path: "/tmp/pool",
-              type: "dir",
-              host_id: host.id
-            })
+    unless Enum.find(host.host_distributions, fn d -> d.distribution_id == distribution.id end) do
+      Task.Supervisor.async(Virt.TaskSupervisor, fn ->
+        pool =
+          case Pools.get_pool_by_name!(host.id, "base_images") do
+            nil ->
+              Virt.Libvirt.Pools.create_pool(%{
+                name: "base_images",
+                path: "/tmp/pool",
+                type: "dir",
+                host_id: host.id
+              })
 
-          pool -> pool
-        end
+            pool -> pool
+          end
 
-      {:ok, volume} =
-        Volumes.create_base_image(%{
-          "url" => distribution.source,
-          "name" => distribution.key,
-          "pool_id" => pool.id
-        })
+        {:ok, volume} =
+          Volumes.create_base_image(%{
+            "url" => distribution.source,
+            "name" => distribution.key,
+            "pool_id" => pool.id
+          })
 
-      # this isn't updating
-      Hosts.update_host(host, %{
-        "host_distributions" => [
-          %{
-            "host_id" => host.id,
-            "distribution_id" => distribution.id,
-            "volume_id" => volume.id
-          }
-        ]
-      })
-    end, restart: :transient)
+        Volumes.update_volume(volume, %{"host_distribution" => %{"host_id" => host.id, "distribution_id" => distribution.id}})
+      end, restart: :transient)
+    end
   end
 
   def delete_distribution(distribution) do

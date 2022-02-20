@@ -19,7 +19,7 @@ defmodule Virt.Libvirt.Volumes.Volume do
     field :created, :boolean, default: false
     belongs_to :pool, Pool
     has_one :domain_disk, DomainDisk, on_delete: :delete_all
-    has_one :host_distribution, HostDistribution
+    has_one :host_distribution, HostDistribution, on_delete: :delete_all
 
     timestamps()
   end

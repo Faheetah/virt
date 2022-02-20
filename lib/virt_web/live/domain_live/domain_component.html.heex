@@ -19,11 +19,12 @@
       <div>
         <%= @domain.vcpus %> cpu /
         <%= Integer.floor_div(@domain.memory_bytes, 1048576) %> mb
-        <%= unless @domain.domain_disks == nil do %>
+        <%= unless @domain.domain_disks == nil or @domain.domain_disks == [] do %>
           / <%= Integer.floor_div(hd(@domain.domain_disks).volume.capacity_bytes, 1048576) %> mb
         <% else %>
           / <span class="text-red-600">! No Disks</span>
         <% end %>
+        / <%= @domain.distribution %>
       </div>
     <% end %>
   </td>

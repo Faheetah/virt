@@ -43,7 +43,6 @@ defmodule Virt.Provision.Jobs do
     job
     |> Job.changeset(%{"status" => "failed", "reason" => "#{inspect reason}"})
     |> Repo.update()
-    |> IO.inspect
   end
 
   def delete_job(job) do

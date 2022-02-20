@@ -37,10 +37,9 @@ defmodule Virt.Provision do
         Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_updated, job})
         Logger.info "Starting job #{job.id} #{job.module}"
         job_module.run(job)
-        |> IO.inspect
         Logger.info("Finished #{job.id} #{job.module}")
         {:ok, job} = Jobs.update_job_status(job, "done")
-        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_updated, job})
+        Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_competed, job})
       rescue
         exception ->
           fail_job(job_module, job, exception)

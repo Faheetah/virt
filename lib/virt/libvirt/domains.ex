@@ -81,10 +81,10 @@ defmodule Virt.Libvirt.Domains do
   end
 
   def provision_domain_disk(host, disk) do
-    disk = Repo.preload(disk, [volume: [:host_distribution]])
+    disk = Repo.preload(disk, [:domain, volume: [:host_distribution]])
 
     with {:ok, host_distribution} <-
-            get_host_distribution(host, disk.volume.host_distribution),
+            get_host_distribution(host, disk.domain.distribution),
          {:ok, volume} <-
             Virt.Libvirt.Volumes.provision_volume(disk.volume, host_distribution.volume)
     do
@@ -173,10 +173,11 @@ defmodule Virt.Libvirt.Domains do
     "b0:0b:1e:" <> suffix
   end
 
+  defp get_host_distribution(host, nil), do: {:error, "distribution is nil"}
   defp get_host_distribution(host, distribution) do
     host_distribution =
       Virt.Libvirt.Hosts.HostDistribution
-      |> Virt.Repo.one(where: [host_id: host.id, distribution: [name: distribution]])
+      |> Virt.Repo.one(where: [host_id: host.id, distribution: [key: distribution]])
       |> Virt.Repo.preload([volume: [:pool]])
 
     if host_distribution do

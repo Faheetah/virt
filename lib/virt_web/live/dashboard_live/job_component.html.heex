@@ -8,7 +8,7 @@
 
       <span class="font-bold"><%= @job.module %> :: <%= @job.id %></span> :: <%= @job.pid || "_" %> :: <%= @job.status %>
     </div>
-    <%= if @job.status in ["failed", "error"] do %>
+    <%= if @job.status in ["running", "failed", "error"] do %>
       <%= if @job.reason do %>
         <div class="p-4 my-2 bg-red-100 text-red-600 border border-red-300 font-bold"><%= @job.reason %></div>
       <% end %>

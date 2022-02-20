@@ -4,15 +4,20 @@ defmodule VirtWeb.DomainLive.FormComponent do
   use VirtWeb, :live_component
 
   alias Virt.Libvirt.Domains
+  alias Virt.Libvirt.Distributions
 
   @impl true
   def update(%{domain: domain} = assigns, socket) do
     changeset = Domains.change_domain(domain)
+    distributions = Distributions.list_distributions()
 
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(:changeset, changeset)}
+    {
+      :ok,
+      socket
+      |> assign(assigns)
+      |> assign(:changeset, changeset)
+      |> assign(:distributions, distributions)
+    }
   end
 
   @impl true
