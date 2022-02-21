@@ -7,6 +7,15 @@
     return_to: Routes.host_show_path(@socket, :show, @host) %>
 <% end %>
 
+<%= if @live_action in [:new_pool] do %>
+  <%= live_modal VirtWeb.HostLive.PoolFormComponent,
+    id: @host.id,
+    title: @page_title,
+    action: @live_action,
+    host: @host,
+    return_to: Routes.host_show_path(@socket, :show, @host) %>
+<% end %>
+
 <div class="text-4xl mb-8">
   <%= @host.name %>
 
@@ -35,12 +44,28 @@
   </div>
 <% end %>
 
-<div class="font-bold text-xl mt-4">Pools</div>
+<div class="font-bold text-xl mt-4">Pools
+  <%= live_patch to: Routes.host_show_path(@socket, :new_pool, @host) do %>
+    <svg class="inline w-8 h-8 stroke-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+  <% end %>
+</div>
 <%= for pool <- @host.pools do %>
-  <div class="font-bold mt-4"><%= pool.name %> <%= pool.id %></div>
+  <div class="font-bold mt-4">
+    <%= pool.name %> <%= pool.id %>
+
+    <%= link to: "#", phx_click: "delete_pool", phx_value_id: pool.id, phx_value_host_id: @host.id, class: "ml-2" do %>
+      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+    <% end %>
+  </div>
+
   <%= for volume <- pool.volumes do %>
     <div class="px-4 py">
       <%= volume.name %> <%= volume.id %>
+
 
     <%= link to: "#", phx_click: "delete_volume", phx_value_id: volume.id, phx_value_host_id: @host.id, class: "ml-2" do %>
       <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

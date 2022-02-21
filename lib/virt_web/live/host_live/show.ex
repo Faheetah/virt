@@ -38,11 +38,19 @@ defmodule VirtWeb.HostLive.Show do
     {:noreply, assign(socket, :host, get_host(host_id))}
   end
 
+  def handle_event("delete_pool", %{"id" => id, "host-id" => host_id}, socket) do
+    pool = Virt.Libvirt.Pools.get_pool!(id)
+    {:ok, _} = Virt.Libvirt.Pools.delete_pool(pool)
+
+    {:noreply, assign(socket, :host, get_host(host_id))}
+  end
+
   defp get_host(id) do
     Hosts.get_host!(id)
     |> Virt.Repo.preload([:domains, pools: [:volumes], host_distributions: [:volume, :distribution]])
   end
 
   defp page_title(:show), do: "Show Host"
+  defp page_title(:new_pool), do: "New Pool"
   defp page_title(:edit), do: "Edit Host"
 end

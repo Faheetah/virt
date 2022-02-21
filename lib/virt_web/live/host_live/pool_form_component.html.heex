@@ -1,0 +1,37 @@
+<div>
+  <div class="text-4xl"><%= @title %></div>
+
+  <.form
+    let={f}
+    for={@changeset}
+    id="domain-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+    class="text-lg">
+
+    <%= hidden_input f, :host_id, value: @host.id %>
+
+    <div class="mt-4">
+      <%= label f, :name, class: "font-bold block" %>
+      <%= text_input f, :name, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :name %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :type, class: "font-bold block" %>
+      <%= text_input f, :type, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :type %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :path, class: "font-bold block" %>
+      <%= text_input f, :path, class: "block border rounded border-gray-600 px-2 p w-full" %>
+      <%= error_tag f, :path %>
+    </div>
+
+    <div class="inline-block mt-4 rounded bg-blue-600 hover:bg-blue-500 text-blue-100">
+      <%= submit "Save", phx_disable_with: "Saving...", class: "px-4 py-2" %>
+    </div>
+  </.form>
+</div>
