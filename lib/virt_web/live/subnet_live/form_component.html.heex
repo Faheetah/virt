@@ -1,0 +1,47 @@
+<div>
+  <div class="text-4xl"><%= @title %></div>
+
+  <.form
+    let={f}
+    for={@changeset}
+    id="domain-form"
+    phx-target={@myself}
+    phx-change="validate"
+    phx-submit="save"
+    class="text-lg">
+
+    <div class="mt-4">
+      <%= label f, :label, class: "font-bold block" %>
+      <%= text_input f, :label, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :label %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :network, class: "font-bold block" %>
+      <%= text_input f, :network, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :network %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :gateway, class: "font-bold block" %>
+      <%= text_input f, :gateway, class: "block border rounded border-gray-600 px-2 p w-full" %>
+      <%= error_tag f, :gateway %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :broadcast, class: "font-bold block" %>
+      <%= text_input f, :broadcast, class: "block border rounded border-gray-600 px-2 p w-full" %>
+      <%= error_tag f, :broadcast %>
+    </div>
+
+    <div class="mt-4">
+      <%= label f, :netmask, class: "font-bold block" %>
+      <%= text_input f, :netmask, class: "block border rounded border-gray-600 px-2 p w-full" %>
+      <%= error_tag f, :netmask %>
+    </div>
+
+    <div class="inline-block mt-4 rounded bg-blue-600 hover:bg-blue-500 text-blue-100">
+      <%= submit "Save", phx_disable_with: "Saving...", class: "px-4 py-2" %>
+    </div>
+  </.form>
+</div>
