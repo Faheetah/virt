@@ -6,6 +6,10 @@ defmodule VirtWeb.DomainLive.FormComponent do
   alias Virt.Libvirt.Domains
   alias Virt.Libvirt.Distributions
 
+  @vcpu_options ~w[1 2 4 8 16]
+  @memory_options ~w[256 512 1024 2048 4096 8192 16384]
+  @disk_options [10, 20, 40, 80, 120, 250, 500]
+
   @impl true
   def update(%{domain: domain} = assigns, socket) do
     changeset = Domains.change_domain(domain)
@@ -17,6 +21,9 @@ defmodule VirtWeb.DomainLive.FormComponent do
       |> assign(assigns)
       |> assign(:changeset, changeset)
       |> assign(:distributions, distributions)
+      |> assign(:vcpu_options, @vcpu_options)
+      |> assign(:memory_options, @memory_options)
+      |> assign(:disk_options, @disk_options)
     }
   end
 

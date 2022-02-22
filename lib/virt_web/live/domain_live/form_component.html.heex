@@ -17,21 +17,23 @@
     </div>
 
     <div class="mt-4">
-      <%= label f, :vcpus, class: "font-bold block" %>
-      <%= number_input f, :vcpus, class: "block border rounded border-gray-600 px-2 p" %>
-      <%= error_tag f, :vcpus %>
+    <div class="font-bold my-2">VCPUs</div>
+    <%= for vcpu <- @vcpu_options do %>
+    <div class="inline-block">
+      <%= radio_button f, :vcpus, vcpu, class: "hidden peer" %>
+      <%= label f, "vcpus_#{vcpu}", vcpu, class: "px-4 py-2 border bg-neutral-100 border-neutral-400 peer-checked:bg-blue-200 peer-checked:border-blue-400" %>
+    </div>
+    <% end %>
     </div>
 
     <div class="mt-4">
-      <%= label f, :memory_mb, class: "font-bold block" %>
-      <%= number_input f, :memory_mb, class: "block border rounded border-gray-600 px-2 p" %>
-      <%= error_tag f, :memory_mb %>
+    <div class="font-bold my-2">Memory</div>
+    <%= for memory <- @memory_options do %>
+    <div class="inline-block">
+      <%= radio_button f, :memory_mb, memory, class: "hidden peer" %>
+      <%= label f, "memory_mb_#{memory}", "#{memory}mb", class: "px-4 py-2 border bg-neutral-100 border-neutral-400 peer-checked:bg-blue-200 peer-checked:border-blue-400" %>
     </div>
-
-    <div class="mt-4">
-      <%= label f, :primary_disk_size_mb, class: "font-bold block" %>
-      <%= number_input f, :primary_disk_size_mb, class: "block border rounded border-gray-600 px-2 p" %>
-      <%= error_tag f, :domain_disks %>
+    <% end %>
     </div>
 
     <%= for distribution <- @distributions do %>
@@ -46,6 +48,16 @@
       </div>
       </div>
     <% end %>
+
+    <div class="mt-4">
+    <div class="font-bold my-2">Disk Size</div>
+    <%= for disk_size <- @disk_options do %>
+    <div class="inline-block">
+      <%= radio_button f, :primary_disk_size_mb, disk_size * 1024, class: "hidden peer" %>
+      <%= label f, "primary_disk_size_mb_#{disk_size*1024}", "#{disk_size}gb", class: "px-4 py-2 border bg-neutral-100 border-neutral-400 peer-checked:bg-blue-200 peer-checked:border-blue-400" %>
+    </div>
+    <% end %>
+    </div>
 
     <div class="mt-4">
       <%= label f, :primary_ip_cidr, class: "font-bold block" %>
