@@ -6,6 +6,7 @@ defmodule Virt.Libvirt.Domains.DomainInterface do
   use Ecto.Schema
   import Ecto.Changeset
   alias Virt.Libvirt.Domains.Domain
+  alias Virt.Network.IpAddresses.IpAddress
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -13,7 +14,7 @@ defmodule Virt.Libvirt.Domains.DomainInterface do
     field :type, :string
     field :mac, :string
     field :bridge, :string
-    field :ip, :string
+    belongs_to :ip_address, IpAddress
     belongs_to :domain, Domain
 
     timestamps()
@@ -22,7 +23,7 @@ defmodule Virt.Libvirt.Domains.DomainInterface do
   @doc false
   def changeset(domain_interface, attrs) do
     domain_interface
-    |> cast(attrs, [:domain_id, :type, :mac, :bridge, :ip])
+    |> cast(attrs, [:domain_id, :type, :mac, :bridge, :ip_address_id])
     |> cast_assoc(:domain)
   end
 end

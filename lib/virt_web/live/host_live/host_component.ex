@@ -5,12 +5,10 @@ defmodule VirtWeb.HostLive.HostComponent do
 
   alias Virt.Libvirt.Hosts
 
-  @impl true
   def mount(_params, _session, socket) do
     {:ok, socket}
   end
 
-  @impl true
   def handle_params(%{"id" => id}, _, socket) do
     host =
       Hosts.get_host!(id)

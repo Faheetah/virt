@@ -19,7 +19,6 @@ defmodule VirtWeb.HostLive.PoolFormComponent do
     }
   end
 
-  @impl true
   def handle_params(%{"id" => id}, _, socket) do
     pool =
       Pools.get_pool!(id)

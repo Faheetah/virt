@@ -12,7 +12,7 @@ defmodule VirtWeb.DomainLive.DomainComponent do
   def handle_params(%{"id" => id}, _, socket) do
     domain =
       Domains.get_domain!(id)
-      |> Virt.Repo.preload([:domain_interfaces, domain_disks: [volume: [:host_distribution]]])
+      |> Virt.Repo.preload([domain_interfaces: [:ip_address], domain_disks: [volume: [:host_distribution]]])
 
     {
       :noreply,

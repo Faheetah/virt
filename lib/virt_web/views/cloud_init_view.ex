@@ -1,6 +1,5 @@
 defmodule VirtWeb.CloudInitView do
   use VirtWeb, :view
-  alias VirtWeb.CloudInitView
 
   def render("metadata.txt", %{metadata: metadata}) do
     metadata

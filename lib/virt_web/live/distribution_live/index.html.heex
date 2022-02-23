@@ -27,7 +27,7 @@
   </thead>
   <tbody>
     <%= for distribution <- @distributions do %>
-      <%= live_component @socket, VirtWeb.DistributionLive.DistributionComponent, socket: @socket, distribution: distribution %>
+      <%= live_component VirtWeb.DistributionLive.DistributionComponent, socket: @socket, distribution: distribution %>
     <% end %>
   </tbody>
 </table>

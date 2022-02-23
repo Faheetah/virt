@@ -30,7 +30,7 @@
   </td>
 
   <td class="flex-grow p-2">
-    <%= Enum.find(@domain.domain_interfaces, fn i -> i.bridge == "br0" end).ip %>
+    <%= Enum.find(@domain.domain_interfaces, fn i -> i.bridge == "br0" end).ip_address.address %>
   </td>
 
   <td class="flex-grow p-2">

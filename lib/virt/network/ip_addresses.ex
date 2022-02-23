@@ -23,26 +23,29 @@ defmodule Virt.Network.IpAddresses do
   """
   def get_ip_address!(id), do: Repo.get!(IpAddress, id)
 
+  def get_ip_address_by_address(address) do
+    Repo.get_by(IpAddress, [address: address])
+  end
+
   @doc """
   Creates a ip_address.
   """
   def create_ip_address(attrs \\ %{}) do
     changeset = IpAddress.changeset(%IpAddress{}, attrs)
     subnet = Subnets.get_subnet!(attrs["subnet_id"])
-    if address_in_subnet(attrs["address"], subnet.network, subnet.netmask) do
+    if address_in_subnet(attrs["address"], subnet.network, subnet.broadcast) do
       Repo.insert(changeset)
     else
-      Ecto.Changeset.add_error(changeset, :address, "not in range", address: attrs["address"], network: subnet.network, netmask: subnet.netmask)
+      Ecto.Changeset.add_error(changeset, :address, "not in range", address: attrs["address"], network: subnet.network, broadcast: subnet.broadcast)
     end
   end
 
-  def address_in_subnet(ip, network, netmask) do
+  def address_in_subnet(ip, network, broadcast) do
     with {:ok, network} <- Virt.Ecto.Type.IPv4.dump(network),
-         {:ok, netmask} <- Virt.Ecto.Type.IPv4.dump(netmask),
+         {:ok, broadcast} <- Virt.Ecto.Type.IPv4.dump(broadcast),
          {:ok, ip} <- Virt.Ecto.Type.IPv4.dump(ip)
     do
-      true
-# 4_294_967_295
+      ip > network and ip < broadcast
     end
   end
 

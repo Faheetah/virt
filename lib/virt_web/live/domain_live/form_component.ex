@@ -5,6 +5,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
 
   alias Virt.Libvirt.Domains
   alias Virt.Libvirt.Distributions
+  alias Virt.Network.Subnets
 
   @vcpu_options ~w[1 2 4 8 16]
   @memory_options ~w[256 512 1024 2048 4096 8192 16384]
@@ -14,6 +15,8 @@ defmodule VirtWeb.DomainLive.FormComponent do
   def update(%{domain: domain} = assigns, socket) do
     changeset = Domains.change_domain(domain)
     distributions = Distributions.list_distributions()
+    subnets = Subnets.list_subnets()
+    subnet_options = Enum.map(subnets, fn s -> {s.network, s.id} end)
 
     {
       :ok,
@@ -24,6 +27,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
       |> assign(:vcpu_options, @vcpu_options)
       |> assign(:memory_options, @memory_options)
       |> assign(:disk_options, @disk_options)
+      |> assign(:subnets, subnet_options)
     }
   end
 

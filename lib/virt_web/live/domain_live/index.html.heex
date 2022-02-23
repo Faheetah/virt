@@ -27,7 +27,7 @@
   </thead>
   <tbody>
     <%= for domain <- @domains do %>
-      <%= live_component @socket, VirtWeb.DomainLive.DomainComponent, socket: @socket, domain: domain %>
+      <%= live_component VirtWeb.DomainLive.DomainComponent, socket: @socket, domain: domain %>
     <% end %>
   </tbody>
 </table>

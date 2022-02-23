@@ -13,7 +13,8 @@ defmodule Virt.Network.Subnets.Subnet do
     field :gateway, IPv4
     field :broadcast, IPv4
     field :netmask, IPv4
-    has_many :ip_addresses, Virt.Network.IpAddresses.IpAddress
+    field :subnet, :string, virtual: true
+    has_many :ip_addresses, Virt.Network.IpAddresses.IpAddress, on_delete: :delete_all
 
     timestamps()
   end
@@ -21,7 +22,7 @@ defmodule Virt.Network.Subnets.Subnet do
   @doc false
   def changeset(subnet, attrs) do
     subnet
-    |> cast(attrs, [:label, :network, :gateway, :broadcast, :netmask])
+    |> cast(attrs, [:label, :subnet, :network, :gateway, :broadcast, :netmask])
     |> validate_required([:network, :netmask])
     |> validate_ranges(attrs)
   end

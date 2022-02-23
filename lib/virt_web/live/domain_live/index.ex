@@ -59,11 +59,11 @@ defmodule VirtWeb.DomainLive.Index do
 
   @impl true
   def handle_info({:domain_provisioned, domain}, socket) do
-    {:noreply, update(socket, :domains, fn _ -> [domain] end)}
+    {:noreply, assign(socket, :domains, list_domains())}
   end
 
   defp list_domains do
     Domains.list_domains()
-    |> Virt.Repo.preload([:domain_interfaces, domain_disks: [volume: [:host_distribution]]])
+    |> Virt.Repo.preload([domain_interfaces: [:ip_address], domain_disks: [volume: [:host_distribution]]])
   end
 end

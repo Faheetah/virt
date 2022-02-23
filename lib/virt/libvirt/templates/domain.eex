@@ -46,15 +46,22 @@
       Could possibly still pass the <ip address='169 ... part in for initial bootstrap if needed
     %>
     <%= for interface <- domain.domain_interfaces do %>
-    <interface type='<%= interface.type%>'>
+
+    <%= if interface.type == "bridge" do %>
+    <interface type='<%= interface.type %>'>
       <mac address='<%= interface.mac %>'/>
-      <%= if interface.type == "bridge" do %>
       <source bridge='<%= interface.bridge %>'/>
-      <% end %>
-      <%= if interface.type == "user" and interface.ip do %>
-      <ip family='ipv4' address='<%= String.split(interface.ip, "/")|>hd %>' prefix='<%= String.split(interface.ip, "/")|>tl %>'/>
-      <% end %>
     </interface>
+    <% end %>
+
+
+    <%= if interface.type == "autoconfig" do %>
+    <interface type='user'>
+      <mac address='<%= interface.mac %>'/>
+      <ip family='ipv4' address='169.254.0.1' prefix='24' />
+    </interface>
+    <% end %>
+
     <% end %>
   </devices>
 </domain>

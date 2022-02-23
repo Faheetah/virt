@@ -14,7 +14,7 @@ defmodule VirtWeb.DomainLive.Show do
   def handle_params(%{"id" => id}, _, socket) do
     domain =
       Domains.get_domain!(id)
-      |> Virt.Repo.preload([domain_disks: [:volume], domain_interfaces: []])
+      |> Virt.Repo.preload([domain_disks: [:volume], domain_interfaces: [:ip_address]])
 
     {:noreply,
      socket

@@ -6,7 +6,9 @@ defmodule Virt.Network.Subnets do
   import Ecto.Query, warn: false
   alias Virt.Repo
 
+  alias Virt.Ecto.Type.IPv4
   alias Virt.Network.Subnets.Subnet
+  alias Virt.Network.IpAddresses
 
   @doc """
   Returns the list of subnets.
@@ -37,6 +39,21 @@ defmodule Virt.Network.Subnets do
   """
   def get_subnet!(id), do: Repo.get!(Subnet, id)
 
+  def find_available_ip(subnet) do
+    {:ok, first_ip} = IPv4.dump(subnet.gateway)
+    {:ok, last_ip} = IPv4.dump(subnet.broadcast)
+    found = Enum.find(first_ip+1..last_ip-1, fn address_value ->
+      {:ok, address} = IPv4.load(address_value)
+      nil == IpAddresses.get_ip_address_by_address(address)
+    end)
+
+    if found != nil do
+      IPv4.load(found)
+    else
+      {:error, "No IP found in subnet"}
+    end
+  end
+
   @doc """
   Creates a subnet.
 
@@ -50,9 +67,39 @@ defmodule Virt.Network.Subnets do
 
   """
   def create_subnet(attrs \\ %{}) do
-    %Subnet{}
-    |> Subnet.changeset(attrs)
-    |> Repo.insert()
+    [network, cidr] = String.split(attrs["subnet"], "/")
+    {:ok, network_value} = IPv4.dump(network)
+    {cidr_value, _} =  Integer.parse(cidr)
+    {:ok, netmask} = IPv4.load(4_294_967_295 - Integer.pow(2,32 - cidr_value) + 1)
+    {:ok, netmask_value} = IPv4.dump(netmask)
+    {:ok, broadcast} = IPv4.load(4_294_967_295 - (netmask_value - network_value))
+    {:ok, gateway} = IPv4.load(network_value + 1)
+
+    {:ok, subnet} =
+      %Subnet{}
+      |> Subnet.changeset(%{
+        "label" => attrs["label"],
+        "network" => network,
+        "gateway" => gateway,
+        "broadcast" => broadcast,
+        "netmask" => netmask
+      })
+      |> Repo.insert()
+
+    IpAddresses.create_ip_address(%{"label" => "network", "address" => network, "subnet_id" => subnet.id})
+    IpAddresses.create_ip_address(%{"label" => "gateway", "address" => gateway, "subnet_id" => subnet.id})
+    IpAddresses.create_ip_address(%{"label" => "broadcast", "address" => broadcast, "subnet_id" => subnet.id})
+  end
+
+  def calculate_netmask(cidr) do
+    {cidr_value, ""} = Integer.parse(cidr)
+    {:ok, cidr} = IPv4.load(4_294_967_295 - Integer.pow(2,32 - cidr_value) + 1)
+    cidr
+  end
+
+  def calculate_cidr(netmask) do
+    {:ok, netmask_value} = IPv4.dump(netmask)
+    trunc(32 - :math.log2((4_294_967_295 - netmask_value) + 1))
   end
 
   @doc """

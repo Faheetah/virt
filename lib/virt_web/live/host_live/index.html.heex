@@ -26,7 +26,7 @@
   </thead>
   <tbody>
     <%= for host <- @hosts do %>
-      <%= live_component @socket, VirtWeb.HostLive.HostComponent, socket: @socket, host: host %>
+      <%= live_component VirtWeb.HostLive.HostComponent, socket: @socket, host: host %>
     <% end %>
   </tbody>
 </table>

@@ -26,4 +26,8 @@ defmodule VirtWeb.LiveHelpers do
   def format_distribution(key) do
     "distribution_#{key}" |> String.replace(~r/\W/u, "_")
   end
+
+  def format_cidr(netmask) do
+    Virt.Network.Subnets.calculate_cidr(netmask)
+  end
 end

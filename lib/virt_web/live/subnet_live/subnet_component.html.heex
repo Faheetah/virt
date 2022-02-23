@@ -9,14 +9,15 @@
 
       <div>
         <div class="font-bold">
-          <%= @subnet.label %>
+          <%= @subnet.network %>/<%= format_cidr(@subnet.netmask) %>
         </div>
         <div>
-          <%= @subnet.network %>
+          <%= @subnet.label %>
         </div>
       </div>
   </td>
 
+  <td class="p-2"><%= @subnet.netmask %></td>
   <td class="p-2"><%= @subnet.network %></td>
   <td class="p-2"><%= @subnet.gateway %></td>
   <td class="p-2"><%= @subnet.broadcast %></td>

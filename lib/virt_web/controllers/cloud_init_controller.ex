@@ -6,7 +6,7 @@ defmodule VirtWeb.CloudInitController do
   def userdata(conn, %{"id" => id}) do
     userdata =
       Virt.Libvirt.Domains.get_domain!(id)
-      |> Virt.Repo.preload([:domain_interfaces])
+      |> Virt.Repo.preload([domain_interfaces: [:ip_address]])
       |> Virt.CloudInit.Userdata.create_userdata()
     text(conn, userdata)
   end

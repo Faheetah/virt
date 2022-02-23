@@ -14,6 +14,8 @@ defmodule Virt.Libvirt.Domains do
   alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Volumes
   alias Virt.Libvirt.Templates
+  alias Virt.Network.IpAddresses
+  alias Virt.Network.Subnets
 
   @doc """
   Returns the list of domains.
@@ -40,11 +42,21 @@ defmodule Virt.Libvirt.Domains do
   def reserve_domain(attrs \\ %{}) do
     host = find_host(attrs)
 
+    subnet = Subnets.get_subnet!(attrs["subnet_id"])
+
+    {:ok, address} = Subnets.find_available_ip(subnet)
+
+    {:ok, ip_address} =
+      IpAddresses.create_ip_address(%{
+        "subnet_id" => attrs["subnet_id"],
+        "address" => address
+      })
+
     attrs =
       attrs
       |> Map.put("domain_interfaces", [
-        %{type: "user", mac: gen_mac(), ip: "169.254.0.1/24"},
-        %{type: "bridge", mac: gen_mac(), bridge: "br0", ip: attrs["primary_ip_cidr"]}
+        %{type: "autoconfig", mac: gen_mac(), ip: "169.254.0.1/24"},
+        %{type: "bridge", mac: gen_mac(), bridge: "br0", ip_address_id: ip_address.id}
       ])
       |> Map.put("domain_disks", reserve_domain_disks(host, attrs))
       |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
@@ -56,10 +68,9 @@ defmodule Virt.Libvirt.Domains do
 
   def provision_domain(%Domain{} = domain) do
     domain = Repo.preload(domain, [:host, domain_disks: [:volume]])
-    disks =
-      Enum.each(domain.domain_disks, fn disk ->
-        {:ok, _} = provision_domain_disk(domain.host, disk)
-      end)
+    Enum.each(domain.domain_disks, fn disk ->
+      {:ok, _} = provision_domain_disk(domain.host, disk)
+    end)
     domain = get_domain!(domain.id)
 
     with {:ok, _} <- create_libvirt_domain(domain),
@@ -67,12 +78,12 @@ defmodule Virt.Libvirt.Domains do
     do
       {
         :ok,
-        Repo.preload(domain, [:domain_interfaces, domain_disks: [:volume]])
+        Repo.preload(domain, [domain_interfaces: [:ip_address], domain_disks: [:volume]])
       }
     end
   end
 
-  defp reserve_domain_disks(host, %{"primary_disk_size_mb" => primary_size, "distribution" => distribution}) do
+  defp reserve_domain_disks(host, %{"primary_disk_size_mb" => primary_size, "distribution" => _}) do
     with {:ok, pool} <- Pools.get_pool_by_name(host.id, "customer_images"),
          {:ok, volume} <- Virt.Libvirt.Volumes.create_volume(%{type: "qcow2", capacity_bytes: get_int(primary_size)*1024*1024, pool_id: pool.id})
     do
@@ -105,7 +116,7 @@ defmodule Virt.Libvirt.Domains do
   end
 
   defp create_libvirt_domain(domain) do
-    domain = Repo.preload(domain, [:host, :domain_interfaces, domain_disks: [:volume]])
+    domain = Repo.preload(domain, [:host, domain_interfaces: [:ip_address], domain_disks: [:volume]])
     xml = Templates.render_domain(domain)
     {:ok, socket} = Libvirt.connect(domain.host.connection_string)
     {:ok, %{"remote_nonnull_domain" => libvirt_domain}} = Libvirt.domain_create_xml(socket, %{"xml_desc" => xml, "flags" => 0})
@@ -180,7 +191,7 @@ defmodule Virt.Libvirt.Domains do
     "b0:0b:1e:" <> suffix
   end
 
-  defp get_host_distribution(host, nil), do: {:error, "distribution is nil"}
+  defp get_host_distribution(_, nil), do: {:error, "distribution is nil"}
   defp get_host_distribution(host, distribution_key) do
     distribution = Virt.Libvirt.Distributions.get_distribution_by_key!(distribution_key)
     host_distribution =

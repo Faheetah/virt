@@ -43,7 +43,7 @@ defmodule VirtWeb.HostLive.Show do
   end
 
   @impl true
-  def handle_event("delete_libvirt_volume", volume, socket) do
+  def handle_event("delete_libvirt_volume", _volume, socket) do
     {:noreply, socket}
   end
 
@@ -51,9 +51,9 @@ defmodule VirtWeb.HostLive.Show do
   @impl true
   def handle_event("delete_libvirt_pool", %{"id" => id, "name" => name, "host-id" => host_id}, socket) do
     host = Hosts.get_host!(host_id)
-    {:ok, socket} = Libvirt.connect(host.connection_string)
-    Libvirt.storage_pool_destroy(socket, %{"pool" => %{"name" => name, "uuid" => id}})
-    {:ok, nil} = Libvirt.storage_pool_undefine(socket, %{"pool" => %{"name" => name, "uuid" => id}})
+    {:ok, connection} = Libvirt.connect(host.connection_string)
+    Libvirt.storage_pool_destroy(connection, %{"pool" => %{"name" => name, "uuid" => id}})
+    {:ok, nil} = Libvirt.storage_pool_undefine(connection, %{"pool" => %{"name" => name, "uuid" => id}})
 
     {:noreply, socket}
   end
