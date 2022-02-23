@@ -52,7 +52,7 @@ defmodule VirtWeb.DomainLive.Index do
       :noreply,
       socket
       |> clear_flash()
-      |> put_flash(:error, "Domain #{domain.id} failed to provision")
+      |> put_flash(:error, "Domain #{domain.id} deleted")
       |> assign(domains: list_domains())
     }
   end

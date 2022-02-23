@@ -11,7 +11,7 @@ defmodule Virt.Network.IpAddresses.IpAddress do
     field :label, :string
     field :address, IPv4
     belongs_to :subnet, Virt.Network.Subnets.Subnet
-    has_one :domain_interface, Virt.Libvirt.Domains.DomainInterface, on_delete: :delete_all
+    has_one :domain_interface, Virt.Libvirt.Domains.DomainInterface
 
     timestamps()
   end

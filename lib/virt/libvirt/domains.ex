@@ -141,6 +141,12 @@ defmodule Virt.Libvirt.Domains do
     |> Map.get(:domain_disks)
     |> Enum.each(fn disk -> Volumes.delete_volume(disk.volume) end)
 
+    domain
+    |> Repo.preload([domain_interfaces: [:ip_address]])
+    |> Map.get(:domain_interfaces)
+    |> Enum.reject(fn interface -> interface.ip_address == nil end)
+    |> Enum.each(fn interface -> IpAddresses.delete_ip_address(interface.ip_address) end)
+
     with _ <- delete_libvirt_domain(domain),
          {:ok, domain} <- Repo.delete(domain)
     do
