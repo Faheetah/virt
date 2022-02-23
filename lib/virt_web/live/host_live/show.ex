@@ -4,6 +4,7 @@ defmodule VirtWeb.HostLive.Show do
   use VirtWeb, :live_view
 
   alias Virt.Libvirt.Hosts
+  alias Virt.Libvirt.Pools.Pool
 
   @impl true
   def mount(_params, _session, socket) do
@@ -24,11 +25,39 @@ defmodule VirtWeb.HostLive.Show do
   end
 
   @impl true
-  def handle_event("synchronize", %{"pool-id" => pool_id, "id" => id, "key" => key}, socket) do
+  def handle_event("synchronize_volume", %{"pool-id" => pool_id, "id" => id, "key" => key}, socket) do
     {:ok, _} = Virt.Libvirt.Volumes.synchronize_libvirt_volume(pool_id, %{"name" => id, "key" => key})
 
     {:noreply, socket}
   end
+
+  @impl true
+  def handle_event("synchronize_pool", pool, socket) do
+    {:ok, _} =
+      pool
+      |> Map.merge(%{"host_id" => pool["host-id"], "path" => "/dev/null", "type" => "dir"})
+      |> then(&Pool.changeset(%Pool{}, &1))
+      |> Virt.Repo.insert()
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("delete_libvirt_volume", volume, socket) do
+    {:noreply, socket}
+  end
+
+
+  @impl true
+  def handle_event("delete_libvirt_pool", %{"id" => id, "name" => name, "host-id" => host_id}, socket) do
+    host = Hosts.get_host!(host_id)
+    {:ok, socket} = Libvirt.connect(host.connection_string)
+    Libvirt.storage_pool_destroy(socket, %{"pool" => %{"name" => name, "uuid" => id}})
+    {:ok, nil} = Libvirt.storage_pool_undefine(socket, %{"pool" => %{"name" => name, "uuid" => id}})
+
+    {:noreply, socket}
+  end
+
 
   # this is inefficient as it reloads all hosts, need to track volumes by ID
   def handle_event("delete_volume", %{"id" => id, "host-id" => host_id}, socket) do

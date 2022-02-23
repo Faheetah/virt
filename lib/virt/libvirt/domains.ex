@@ -10,7 +10,9 @@ defmodule Virt.Libvirt.Domains do
 
   alias Virt.Libvirt.Domains.Domain
   alias Virt.Libvirt.Hosts
+  alias Virt.Libvirt.Hosts.HostDistribution
   alias Virt.Libvirt.Pools
+  alias Virt.Libvirt.Volumes
   alias Virt.Libvirt.Templates
 
   @doc """
@@ -123,7 +125,12 @@ defmodule Virt.Libvirt.Domains do
   Deletes a domain.
   """
   def delete_domain(%Domain{} = domain) do
-    with :ok <- delete_libvirt_domain(domain),
+    domain
+    |> Repo.preload([domain_disks: [:volume]])
+    |> Map.get(:domain_disks)
+    |> Enum.each(fn disk -> Volumes.delete_volume(disk.volume) end)
+
+    with _ <- delete_libvirt_domain(domain),
          {:ok, domain} <- Repo.delete(domain)
     do
       Phoenix.PubSub.broadcast(Virt.PubSub, "domains", {:domain_deleted, domain})
@@ -174,10 +181,10 @@ defmodule Virt.Libvirt.Domains do
   end
 
   defp get_host_distribution(host, nil), do: {:error, "distribution is nil"}
-  defp get_host_distribution(host, distribution) do
+  defp get_host_distribution(host, distribution_key) do
+    distribution = Virt.Libvirt.Distributions.get_distribution_by_key!(distribution_key)
     host_distribution =
-      Virt.Libvirt.Hosts.HostDistribution
-      |> Virt.Repo.one(where: [host_id: host.id, distribution: [key: distribution]])
+      Virt.Repo.one(from hd in HostDistribution, where: [host_id: ^host.id, distribution_id: ^distribution.id])
       |> Virt.Repo.preload([volume: [:pool]])
 
     if host_distribution do

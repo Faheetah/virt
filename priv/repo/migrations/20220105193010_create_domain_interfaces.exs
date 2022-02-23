@@ -14,6 +14,7 @@ defmodule Virt.Repo.Migrations.CreateDomainInterfaces do
     end
 
     create index(:domain_interfaces, [:domain_id])
+    create(unique_index(:domain_interfaces, [:mac]))
   end
 end
 

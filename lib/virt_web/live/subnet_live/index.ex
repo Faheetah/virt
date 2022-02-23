@@ -47,22 +47,6 @@ defmodule VirtWeb.SubnetLive.Index do
     {:noreply, assign(socket, :subnets, list_subnets())}
   end
 
-  def handle_event("synchronize", %{"id" => id}, socket) do
-    subnet = Subnets.get_subnet!(id)
-    Virt.Network.Subnets.synchronize_subnet(subnet)
-
-    {:noreply, assign(socket, :subnets, list_subnets())}
-  end
-
-  @impl true
-  def handle_info({:subnet_synchronized, subnet}, socket) do
-    {:noreply, put_flash(socket, :info, "Subnet #{subnet.key} synchronized")}
-  end
-
-  def handle_info({:subnet_synchronize_failed, subnet}, socket) do
-    {:noreply, put_flash(socket, :error, "subnet #{subnet.key} failed to synchronize")}
-  end
-
   @impl true
   def handle_info(_, socket) do
     {:noreply, socket}

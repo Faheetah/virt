@@ -28,7 +28,7 @@
   </thead>
   <tbody>
     <%= for subnet <- @subnets do %>
-      <%= live_component @socket, VirtWeb.SubnetLive.SubnetComponent, socket: @socket, subnet: subnet %>
+      <%= live_component VirtWeb.SubnetLive.SubnetComponent, subnet: subnet %>
     <% end %>
   </tbody>
 </table>
