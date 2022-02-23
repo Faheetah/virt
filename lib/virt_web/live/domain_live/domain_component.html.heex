@@ -1,6 +1,7 @@
 <tr id={"domain-#{@domain.id}"} class="border border-gray-300">
   <td class="p-2 text-sm flex">
     <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "pr-2" do %>
+      <%# this needs to swap in the SVG for the distro %>
       <%= if @domain.created do %>
         <svg class="w-10 h-10 fill-lime-100 stroke-lime-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>

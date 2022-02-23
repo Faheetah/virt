@@ -39,10 +39,14 @@
   <div class="px-4 py">
     <strong><%= interface.mac %> :</strong> (<%= interface.id %>)
   </div>
-  <div class="px-4 py">
-    Bridge: <%= interface.bridge %>
-  </div>
-  <div class="px-4 py">
-    IP: <%= interface.ip %>
-  </div>
+  <%= if interface.bridge != nil do %>
+    <div class="px-4 py">
+      Bridge: <%= interface.bridge %>
+    </div>
+  <% end %>
+  <%= if interface.ip_address != nil do %>
+    <div class="px-4 py">
+      IP: <%= inspect interface.ip_address.address %>
+    </div>
+  <% end %>
 <% end %>

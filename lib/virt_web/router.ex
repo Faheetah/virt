@@ -39,6 +39,8 @@ defmodule VirtWeb.Router do
     live "/subnets/new", SubnetLive.Index, :new
     live "/subnets/:id/edit", SubnetLive.Index, :edit
 
+    live "/subnets/:id", SubnetLive.Show, :show
+
     live "/domains", DomainLive.Index, :index
     live "/domains/new", DomainLive.Index, :new
     live "/domains/:id/edit", DomainLive.Index, :edit
