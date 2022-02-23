@@ -29,11 +29,31 @@
 </div>
 
 <div class="font-bold text-xl mt-4">IP Addresses</div>
-<%= for ip_address <- @subnet.ip_addresses do %>
-  <div class="px-4 py">
-    <strong><%= ip_address.address %> :</strong>
-    <%= live_redirect to: Routes.domain_show_path(@socket, :show, ip_address.domain_interface.domain), class: "pr-2" do %>
-      <%= ip_address.domain_interface.domain.name %>
+<table class="border border-collapse border-gray-300 w-1/4">
+  <thead class="bg-gray-100">
+    <tr class="text-left">
+      <th class="p-2">IP</th>
+      <th class="p-2">Label</th>
+      <th class="p-2">Host</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= for ip_address <- @subnet.ip_addresses do %>
+      <tr class="border border-gray-300">
+        <td class="p-2">
+          <strong><%= ip_address.address %></strong>
+        </td>
+        <td class="p-2">
+          <strong><%= ip_address.label %></strong>
+        </td>
+        <td class="p-2">
+          <%= if ip_address.domain_interface do %>
+          <%= live_redirect to: Routes.domain_show_path(@socket, :show, ip_address.domain_interface.domain), class: "pr-2" do %>
+            <%= ip_address.domain_interface.domain.name %>
+          <% end %>
+          <% end %>
+        </td>
+      </tr>
     <% end %>
-  </div>
-<% end %>
+  </tbody>
+</table>
