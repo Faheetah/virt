@@ -12,13 +12,17 @@ defmodule VirtWeb.CloudInitController do
   end
 
   def metadata(conn, _params) do
-    # data = %{id: "id", name: "name", interfaces: [%{device: "eth0", ip_address: "192", subnet: %{network: "255", netmask: "255", broadcast: "255", gateway: "1"}}]}
-    # metadata = Virt.CloudInit.Metadata.create_metadata(data)
-    # text(conn, metadata)
     text(conn, "")
   end
 
   def vendordata(conn, _params) do
     text(conn, "")
+  end
+
+  def provisioned(conn, %{"id" => id}) do
+    {:ok, _} =
+      Virt.Libvirt.Domains.get_domain!(id)
+      |> Virt.Libvirt.Domains.update_domain(%{created: true})
+    text(conn, "OK")
   end
 end

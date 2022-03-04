@@ -6,6 +6,7 @@ defmodule Virt.CloudInit.Userdata do
   def create_userdata(domain) do
     "#cloud-config\n" <> Jason.encode!(
     %{
+      hostname: domain.name,
       users: [
         %{
           name: "main",
@@ -27,7 +28,10 @@ defmodule Virt.CloudInit.Userdata do
           })
         }
       ],
-      runcmd: ["netplan apply"]
+      runcmd: [
+        ["netplan", "apply"],
+        ["curl", "-s", "http://10.0.0.2:4000/ci/#{domain.id}/provisioned"]
+      ]
     }
     )
   end

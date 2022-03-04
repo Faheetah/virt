@@ -73,9 +73,7 @@ defmodule Virt.Libvirt.Domains do
     end)
     domain = get_domain!(domain.id)
 
-    with {:ok, _} <- create_libvirt_domain(domain),
-         {:ok, domain} <- Repo.update(Domain.changeset(domain, %{created: true}))
-    do
+    with {:ok, _} <- create_libvirt_domain(domain) do
       {
         :ok,
         Repo.preload(domain, [domain_interfaces: [:ip_address], domain_disks: [:volume]])

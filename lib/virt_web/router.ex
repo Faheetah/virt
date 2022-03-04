@@ -20,6 +20,7 @@ defmodule VirtWeb.Router do
     get "/ci/:id/meta-data", CloudInitController, :metadata
     get "/ci/:id/user-data", CloudInitController, :userdata
     get "/ci/:id/vendor-data", CloudInitController, :vendordata
+    get "/ci/:id/provisioned", CloudInitController, :provisioned
 
     live "/", DashboardLive.Index, :index
 

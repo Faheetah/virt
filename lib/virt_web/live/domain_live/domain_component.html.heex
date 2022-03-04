@@ -15,7 +15,7 @@
 
     <%= live_redirect to: Routes.domain_show_path(@socket, :show, @domain), class: "text-gray-600 w-full" do %>
       <div class="font-bold">
-        <%= @domain.name %>
+        <%= @domain.name %>.<%= @domain.domain %>
       </div>
       <div>
         <%= @domain.vcpus %> cpu /

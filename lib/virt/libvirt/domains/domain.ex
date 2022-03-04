@@ -13,6 +13,7 @@ defmodule Virt.Libvirt.Domains.Domain do
   @foreign_key_type :binary_id
   schema "domains" do
     field :name, :string
+    field :domain, :string
     field :vcpus, :integer
     field :memory_bytes, :integer
     field :memory_mb, :integer, virtual: true
@@ -29,7 +30,7 @@ defmodule Virt.Libvirt.Domains.Domain do
   @doc false
   def changeset(domain, attrs) do
     domain
-    |> cast(attrs, [:name, :memory_bytes, :memory_mb, :vcpus, :distribution, :host_id, :created])
+    |> cast(attrs, [:name, :domain, :memory_bytes, :memory_mb, :vcpus, :distribution, :host_id, :created])
     |> cast_assoc(:domain_disks)
     |> cast_assoc(:domain_interfaces)
     |> validate_required([:name, :memory_bytes, :vcpus])

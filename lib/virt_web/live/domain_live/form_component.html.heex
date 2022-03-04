@@ -17,6 +17,12 @@
     </div>
 
     <div class="mt-4">
+      <%= label f, :domain, class: "font-bold block" %>
+      <%= text_input f, :domain, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= error_tag f, :domain %>
+    </div>
+
+    <div class="mt-4">
     <div class="font-bold my-2">VCPUs</div>
     <%= for vcpu <- @vcpu_options do %>
     <div class="inline-block">
