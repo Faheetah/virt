@@ -76,12 +76,16 @@ defmodule Virt.Libvirt.Hosts do
     {:ok, %{"ifaces" => interfaces}} = Libvirt.connect_list_all_interfaces(socket, args)
     {:ok, %{"nets" => networks}} = Libvirt.connect_list_all_networks(socket, args)
     {:ok, %{"pools" => pools}} = Libvirt.connect_list_all_storage_pools(socket, args)
+    {:ok, node_info} = Libvirt.node_get_info(socket)
+    {:ok, %{"freeMem" => free_mem}} = Libvirt.node_get_free_memory(socket)
 
     %{
       domains: domains,
       interfaces: interfaces,
       networks: networks,
-      pools: Enum.map(pools, &get_libvirt_volumes(socket, &1))
+      pools: Enum.map(pools, &get_libvirt_volumes(socket, &1)),
+      node_info: node_info,
+      free_mem: free_mem,
     }
   end
 
@@ -93,6 +97,10 @@ defmodule Virt.Libvirt.Hosts do
     }
 
     {:ok, %{"vols" => volumes}} = Libvirt.storage_pool_list_all_volumes(socket, args)
-    Map.put(pool, :volumes, volumes)
+    {:ok, stats} = Libvirt.storage_pool_get_info(socket, %{"pool" => pool})
+
+    pool
+    |> Map.put(:volumes, volumes)
+    |> Map.put(:stats, stats)
   end
 end

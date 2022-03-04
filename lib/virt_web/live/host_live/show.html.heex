@@ -37,6 +37,19 @@
   <%= @host.connection_string %>
 </div>
 
+<div class="px-4 py">
+  <strong>CPU (<%= @libvirt_stats.node_info["model"] %>):</strong>
+  <%= @libvirt_stats.node_info["cores"] %> core
+  / <%= @libvirt_stats.node_info["cpus"] %> cpus
+  @ <%= @libvirt_stats.node_info["mhz"] %> mhz
+</div>
+
+<div class="px-4 py">
+  <strong>Memory:</strong>
+  <%= ceil(@libvirt_stats.node_info["memory"] / 1024 / 1024) %> GB
+  / <%= ceil(@libvirt_stats.free_mem / 1024 / 1024 / 1024) %> GB free
+</div>
+
 <div class="font-bold text-xl mt-4">Distributions</div>
 <%= for hd <- @host.host_distributions do %>
   <div class="px-4 py">
@@ -108,6 +121,7 @@
 <%= for pool <- @libvirt_stats.pools do %>
   <div class="font-bold mt-4">
     <%= pool["name"] %> <%= pool["uuid"] %>
+    (<%= ceil(pool.stats["allocation"] / 1024 / 1024 / 1024) %> GB / <%= ceil(pool.stats["capacity"] / 1024 / 1024 / 1024) %> GB)
     <%= link to: "#", phx_click: "synchronize_pool", phx_value_id: pool["uuid"], phx_value_host_id: @host.id, phx_value_name: pool["name"], phx_value_type: pool["type"], phx_value_path: pool["path"], phx_value_autostart: pool["autostart"] do %>
       <svg class="inline w-8 h-8 fill-transparent stroke-green-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
