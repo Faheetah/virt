@@ -15,7 +15,7 @@
         IP needs to map to the hypervisor's metadata proxy, this in the future should get
         authenticated by the network configuration, and the hypervisor handle it with iptables forward
       %>
-      <entry name="serial">ds=nocloud-net;s=http://169.254.169.254/ci/<%= domain.id %>/</entry>
+      <entry name="serial">ds=nocloud-net;s=http://10.0.0.2:4000/ci/<%= domain.id %>/</entry>
     </system>
   </sysinfo>
   <features>
