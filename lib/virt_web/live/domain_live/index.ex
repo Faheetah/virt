@@ -47,6 +47,24 @@ defmodule VirtWeb.DomainLive.Index do
   end
 
   @impl true
+  def handle_event("restart", %{"id" => id}, socket) do
+    Domains.restart_domain(id)
+    {:noreply, assign(socket, :domains, list_domains())}
+  end
+
+  @impl true
+  def handle_event("shutdown", %{"id" => id}, socket) do
+    Domains.shutdown_domain(id)
+    {:noreply, assign(socket, :domains, list_domains())}
+  end
+
+  @impl true
+  def handle_event("start", %{"id" => id}, socket) do
+    Domains.start_domain(id)
+    {:noreply, assign(socket, :domains, list_domains())}
+  end
+
+  @impl true
   def handle_info({:domain_deleted, domain}, socket) do
     {
       :noreply,

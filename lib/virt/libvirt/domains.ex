@@ -117,7 +117,8 @@ defmodule Virt.Libvirt.Domains do
     domain = Repo.preload(domain, [:host, domain_interfaces: [:ip_address], domain_disks: [:volume]])
     xml = Templates.render_domain(domain)
     {:ok, socket} = Libvirt.connect(domain.host.connection_string)
-    {:ok, %{"remote_nonnull_domain" => libvirt_domain}} = Libvirt.domain_create_xml(socket, %{"xml_desc" => xml, "flags" => 0})
+    {:ok, %{"remote_nonnull_domain" => libvirt_domain}} = Libvirt.domain_define_xml(socket, %{"xml" => xml})
+    Libvirt.domain_create(socket, %{"dom" => libvirt_domain})
     {:ok, libvirt_domain}
   end
 
@@ -209,4 +210,39 @@ defmodule Virt.Libvirt.Domains do
     end
   end
 
+  def restart_domain(id) do
+    domain =
+      get_domain!(id)
+      |> Virt.Repo.preload([:host])
+
+    {:ok, socket} = Libvirt.connect(domain.host.connection_string)
+
+    {:ok, %{"remote_nonnull_domain" => dom}} = Libvirt.domain_lookup_by_uuid(socket, %{"uuid" => id})
+    Libvirt.domain_reboot(socket, %{"dom" => dom, "flags" => 0})
+    update_domain(domain, %{"online" => true})
+  end
+
+  def shutdown_domain(id) do
+    domain =
+      get_domain!(id)
+      |> Virt.Repo.preload([:host])
+
+    {:ok, socket} = Libvirt.connect(domain.host.connection_string)
+
+    {:ok, %{"remote_nonnull_domain" => dom}} = Libvirt.domain_lookup_by_uuid(socket, %{"uuid" => id})
+    Libvirt.domain_shutdown(socket, %{"dom" => dom})
+    update_domain(domain, %{"online" => false})
+  end
+
+  def start_domain(id) do
+    domain =
+      get_domain!(id)
+      |> Virt.Repo.preload([:host])
+
+    {:ok, socket} = Libvirt.connect(domain.host.connection_string)
+
+    {:ok, %{"remote_nonnull_domain" => dom}} = Libvirt.domain_lookup_by_uuid(socket, %{"uuid" => id})
+    Libvirt.domain_create(socket, %{"dom" => dom})
+    update_domain(domain, %{"online" => true})
+  end
 end

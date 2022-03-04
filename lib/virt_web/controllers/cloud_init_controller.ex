@@ -22,7 +22,8 @@ defmodule VirtWeb.CloudInitController do
   def provisioned(conn, %{"id" => id}) do
     {:ok, _} =
       Virt.Libvirt.Domains.get_domain!(id)
-      |> Virt.Libvirt.Domains.update_domain(%{created: true})
+      |> Virt.Libvirt.Domains.update_domain(%{created: true, online: true})
+
     text(conn, "OK")
   end
 end
