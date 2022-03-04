@@ -7,7 +7,7 @@ defmodule Virt.Repo.Migrations.CreateDomainInterfaces do
       add :type, :string, null: false
       add :mac, :string, null: false
       add :bridge, :string
-      add :ip_address_id, references(:ip_addresses, type: :binary_id)
+      add :ip_address_id, references(:ip_addresses, type: :binary_id, on_delete: :delete_all)
       add :domain_id, references(:domains, on_delete: :delete_all, type: :binary_id)
 
       timestamps()
