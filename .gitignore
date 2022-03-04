@@ -34,3 +34,10 @@ npm-debug.log
 
 # folder base images are downloaded to
 /images
+
+/priv/static/robots-*
+/priv/static/favicon-*
+/priv/static/images/phoenix-*
+/priv/static/*.gz
+/priv/static/images/distributions/*.gz
+/priv/static/images/distributions/*-*
