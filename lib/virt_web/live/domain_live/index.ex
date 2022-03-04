@@ -58,7 +58,7 @@ defmodule VirtWeb.DomainLive.Index do
   end
 
   @impl true
-  def handle_info({:domain_provisioned, domain}, socket) do
+  def handle_info({:domain_provisioned, _domain}, socket) do
     {:noreply, assign(socket, :domains, list_domains())}
   end
 

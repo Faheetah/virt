@@ -9,7 +9,6 @@ defmodule Virt.Libvirt.Distributions do
   alias Virt.Repo
 
   alias Virt.Libvirt.Distributions.Distribution
-  alias Virt.Libvirt.Hosts
   alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Volumes
 
