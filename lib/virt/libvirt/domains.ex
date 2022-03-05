@@ -157,7 +157,8 @@ defmodule Virt.Libvirt.Domains do
   defp delete_libvirt_domain(domain) do
     with domain <- Repo.preload(domain, [:host]),
          {:ok, socket} <- Libvirt.connect(domain.host.connection_string),
-         {:ok, nil} <- Libvirt.domain_destroy(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}}) # don't think "id" is necessary
+         {:ok, nil} <- Libvirt.domain_destroy(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}}), # don't think "id" is necessary
+         {:ok, nil} <- Libvirt.domain_undefine(socket, %{"dom" => %{"name" => domain.name, "uuid" => domain.id, "id" => -1}}) # don't think "id" is necessary
     do
       :ok
     else
