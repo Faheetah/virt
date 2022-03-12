@@ -10,6 +10,7 @@ defmodule Virt.CloudInit.Userdata do
       users: [
         %{
           name: "main",
+          shell: "/bin/bash",
           sudo: "ALL=(ALL) NOPASSWD:ALL",
           lock_passwd: false,
           hashed_passwd: "$6$rounds=4096$wR/HnZAa$5Ob0hvdk7Pqscdaxs5VZky9U5OZdgkwkraTfvAhHL2BhT9fJ2bvxIRz/vpi7fASweK4RoepjCioYycKzfNawP1",
@@ -26,11 +27,17 @@ defmodule Virt.CloudInit.Userdata do
               ethernets: get_ethernets(domain)
             }
           })
+        },
+        %{
+          path: "/etc/guest-id",
+          permissions: "0400",
+          content: domain.id
         }
       ],
       runcmd: [
         ["netplan", "apply"],
-        ["curl", "-s", "http://10.0.0.2:4000/ci/#{domain.id}/provisioned"]
+        # retries as network comes up
+        "for i in 1 2 3 4 5; do curl http://169.254.169.254/ci/#{domain.id}/provisioned && break || sleep 1; done"
       ]
     }
     )

@@ -55,7 +55,6 @@ defmodule Virt.Libvirt.Domains do
     attrs =
       attrs
       |> Map.put("domain_interfaces", [
-        %{type: "autoconfig", mac: gen_mac(), ip: "169.254.0.1/24"},
         %{type: "bridge", mac: gen_mac(), bridge: "br0", ip_address_id: ip_address.id}
       ])
       |> Map.put("domain_disks", reserve_domain_disks(host, attrs))
