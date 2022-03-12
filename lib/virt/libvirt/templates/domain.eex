@@ -1,5 +1,6 @@
 <domain type='kvm'>
-  <name><%= domain.name %></name>
+  <%# this needs to also be domain.id, because domain.name will not be unique to libvirt %>
+  <name><%= domain.id %></name>
   <uuid><%= domain.id %></uuid>
   <memory unit='B'><%= domain.memory_bytes %></memory>
   <currentMemory unit='B'><%= domain.memory_bytes %></currentMemory>
@@ -54,11 +55,9 @@
     </interface>
     <% end %>
 
-
     <%= if interface.type == "autoconfig" do %>
     <interface type='user'>
       <mac address='<%= interface.mac %>'/>
-      <ip family='ipv4' address='169.254.0.1' prefix='24' />
     </interface>
     <% end %>
 

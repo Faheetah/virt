@@ -8,7 +8,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
   alias Virt.Network.Subnets
 
   @vcpu_options ~w[1 2 4 8 16]
-  @memory_options ~w[256 512 1024 2048 4096 8192 16384]
+  @memory_options ~w[512 1024 2048 4096 8192 16384]
   @disk_options [10, 20, 40, 80, 120, 250, 500]
 
   @impl true

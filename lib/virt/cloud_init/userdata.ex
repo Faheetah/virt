@@ -18,8 +18,8 @@ defmodule Virt.CloudInit.Userdata do
       ],
       write_files: [
         %{
-          path: "/etc/netplan/90-custom-networking.yaml",
-          permissions: "0640",
+          path: "/etc/netplan/50-cloud-init.yaml",
+          permissions: "0400",
           content: Jason.encode!(%{
             network: %{
               version: 2,
@@ -41,14 +41,15 @@ defmodule Virt.CloudInit.Userdata do
     |> Enum.reject(fn interface -> interface.ip_address == nil end)
     |> Enum.with_index
     |> Enum.reduce(%{}, fn {interface, index}, acc ->
-      Map.put(acc, "if#{index}", %{
-        match: %{macaddress: interface.mac},
-        dhcp4: false,
-        addresses: ["#{interface.ip_address.address}/#{Virt.Network.Subnets.calculate_cidr(interface.ip_address.subnet.netmask)}"],
-        gateway4: interface.ip_address.subnet.gateway,
-        nameservers: %{
-          addresses: ["8.8.8.8", "8.8.4.4"]
-        }
+      Map.put(acc, "eth#{index}", %{
+        "match" => %{macaddress: interface.mac},
+        "dhcp4" => false,
+        "addresses" => [
+          "#{interface.ip_address.address}/#{Virt.Network.Subnets.calculate_cidr(interface.ip_address.subnet.netmask)}"
+        ],
+        "gateway4" => interface.ip_address.subnet.gateway,
+        "nameservers" => %{"addresses" => ["8.8.8.8", "8.8.4.4"]},
+        "set-name" => "eth#{index}"
       })
     end)
   end
