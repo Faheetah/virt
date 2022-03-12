@@ -1,8 +1,6 @@
 defmodule Virt.CloudInit.Userdata do
   @moduledoc false
 
-  @sshkey "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCYkhMbPxU7bEs5KUcsKK6LL2tdhGfVFqt9HEnp9beFbipko+SGNDr5YdDogszOaDK/rPoTcwHUUG3fmEEepspZ9NR8+E8YLKZU+5a29gIUC4VN3bT2yS+UT8bHMMPBKsm0laXz//JCJBwediOVzjYK0AM55YB9tePLLWWfC9nN1/xBTXiMjdcLyB5g4K2Uqbh955Fkt+ZBN/qbQqBqXEsiJlO9MXLr9WNmY9sKdDj6kXnn3srnu/2oCT5LyHIHBf36dxID64UXAEXTUGMnu9oDS3qJkI0RaAI/NOQ1ZToOpjzbPBhhyegc2SNpmmkEx7R2yYEpyiVkN83BaokY3HOdU8/e9tm5g4fh7mnF0hV2+MhWZfmwrsd4Eo+95jQA8o4aZV6z/p92Z+T4nNt/wv1eV2tieJKDhlI92Z/cXTVtFs445KyOsTmm5pbvjSqWVOPb9dXeI5TE2X3Lh8Bxj92u24dm50yFpd91IyQoPrEGvLBIApH7w4uP/q6WxwicWw8= main@Booky"
-
   def create_userdata(domain) do
     "#cloud-config\n" <> Jason.encode!(
     %{
@@ -14,7 +12,7 @@ defmodule Virt.CloudInit.Userdata do
           sudo: "ALL=(ALL) NOPASSWD:ALL",
           lock_passwd: false,
           hashed_passwd: "$6$rounds=4096$wR/HnZAa$5Ob0hvdk7Pqscdaxs5VZky9U5OZdgkwkraTfvAhHL2BhT9fJ2bvxIRz/vpi7fASweK4RoepjCioYycKzfNawP1",
-          ssh_authorized_keys: [@sshkey]
+          ssh_authorized_keys: Enum.map(domain.domain_access_keys, fn key -> key.access_key.public_key end)
         }
       ],
       write_files: [

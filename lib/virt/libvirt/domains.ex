@@ -31,6 +31,15 @@ defmodule Virt.Libvirt.Domains do
   """
   def get_domain!(id), do: Repo.get!(Domain, id)
 
+  def get_domain_primary_ip(domain) do
+    if domain.domain_interfaces do
+      ip = Enum.find(domain.domain_interfaces, fn i -> i.bridge == "br0" end)
+      if ip do
+        ip.ip_address.address
+      end
+    end
+  end
+
   @doc """
   Creates a domain.
   """
@@ -59,6 +68,7 @@ defmodule Virt.Libvirt.Domains do
       ])
       |> Map.put("domain_disks", reserve_domain_disks(host, attrs))
       |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
+      |> Map.put("domain_access_keys", Enum.map(attrs["access_keys"], fn key_id -> %{"access_key_id" => key_id} end))
 
     %Domain{}
     |> Domain.changeset(Map.put(attrs, "host_id", host.id))

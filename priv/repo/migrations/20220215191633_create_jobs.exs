@@ -1,4 +1,4 @@
-defmodule Virt.Repo.Migrations.AddJobs do
+defmodule Virt.Repo.Migrations.CreateJobs do
   use Ecto.Migration
 
   def change do

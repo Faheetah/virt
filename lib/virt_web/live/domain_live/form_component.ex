@@ -6,6 +6,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
   alias Virt.Libvirt.Domains
   alias Virt.Libvirt.Distributions
   alias Virt.Network.Subnets
+  alias Virt.Secrets.AccessKeys
 
   @vcpu_options ~w[1 2 4 8 16]
   @memory_options ~w[512 1024 2048 4096 8192 16384]
@@ -17,6 +18,7 @@ defmodule VirtWeb.DomainLive.FormComponent do
     distributions = Distributions.list_distributions()
     subnets = Subnets.list_subnets()
     subnet_options = Enum.map(subnets, fn s -> {s.network, s.id} end)
+    access_keys = AccessKeys.list_access_keys()
 
     {
       :ok,
@@ -28,6 +30,8 @@ defmodule VirtWeb.DomainLive.FormComponent do
       |> assign(:memory_options, @memory_options)
       |> assign(:disk_options, @disk_options)
       |> assign(:subnets, subnet_options)
+      |> assign(:access_keys, access_keys)
+      |> assign(:selected_keys, [])
     }
   end
 
@@ -38,7 +42,12 @@ defmodule VirtWeb.DomainLive.FormComponent do
       |> Domains.change_domain(domain_params)
       |> Map.put(:action, :validate)
 
-    {:noreply, assign(socket, :changeset, changeset)}
+    {
+      :noreply,
+      socket
+      |> assign(:changeset, changeset)
+      |> assign(:selected_keys, domain_params["access_keys"] || [])
+    }
   end
 
   @impl true

@@ -20,7 +20,7 @@ defmodule Virt.MixProject do
   def application do
     [
       mod: {Virt.Application, []},
-      extra_applications: [:logger, :runtime_tools, :inets, :ssl]
+      extra_applications: [:logger, :runtime_tools, :inets, :ssl, :ssh]
     ]
   end
 

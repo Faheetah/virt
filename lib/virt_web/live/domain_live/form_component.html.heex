@@ -71,6 +71,19 @@
       <%= error_tag f, :subnet_id %>
     </div>
 
+    <div class="mt-4">
+      <%= label f, :access_keys, class: "font-bold block" %>
+      <%= for access_key <- @access_keys do %>
+      <div class="mt-2">
+        <label>
+        <%= tag :input, name: "domain[access_keys][]", type: "checkbox", value: access_key.id, checked: access_key.id in @selected_keys, class: "w-4 h-4" %>
+        <%= access_key.name %> (<%= access_key.comment %>)
+        </label>
+      </div>
+      <% end %>
+      <%= error_tag f, :access_keys %>
+    </div>
+
     <div class="inline-block mt-4 rounded bg-blue-600 hover:bg-blue-500 text-blue-100">
       <%= submit "Save", phx_disable_with: "Saving...", class: "px-4 py-2" %>
     </div>

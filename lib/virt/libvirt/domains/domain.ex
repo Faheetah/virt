@@ -5,6 +5,7 @@ defmodule Virt.Libvirt.Domains.Domain do
 
   use Ecto.Schema
   import Ecto.Changeset
+  alias Virt.Libvirt.Domains.DomainAccessKey
   alias Virt.Libvirt.Domains.DomainDisk
   alias Virt.Libvirt.Domains.DomainInterface
   alias Virt.Libvirt.Hosts.Host
@@ -21,9 +22,11 @@ defmodule Virt.Libvirt.Domains.Domain do
     field :created, :boolean, default: false
     field :online, :boolean, default: false
     field :subnet, :string, virtual: true
+    field :access_keys, {:array, :string}, virtual: true
     belongs_to :host, Host
     has_many :domain_disks, DomainDisk, on_delete: :delete_all
     has_many :domain_interfaces, DomainInterface, on_delete: :delete_all
+    has_many :domain_access_keys, DomainAccessKey, on_delete: :delete_all
 
     timestamps()
   end
@@ -31,9 +34,10 @@ defmodule Virt.Libvirt.Domains.Domain do
   @doc false
   def changeset(domain, attrs) do
     domain
-    |> cast(attrs, [:name, :domain, :memory_bytes, :memory_mb, :vcpus, :distribution, :host_id, :created, :online])
+    |> cast(attrs, [:name, :domain, :memory_bytes, :memory_mb, :vcpus, :distribution, :host_id, :created, :online, :access_keys])
     |> cast_assoc(:domain_disks)
     |> cast_assoc(:domain_interfaces)
+    |> cast_assoc(:domain_access_keys)
     |> validate_required([:name, :memory_bytes, :vcpus])
     |> validate_inclusion(:vcpus, 1..16, message: "VCPU must be max of 16")
     |> validate_length(:name, max: 32)
