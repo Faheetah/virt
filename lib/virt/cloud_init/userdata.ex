@@ -17,7 +17,7 @@ defmodule Virt.CloudInit.Userdata do
       ],
       write_files: [
         %{
-          path: "/etc/netplan/50-cloud-init.yaml",
+          path: "/etc/netplan/90-cloud-init.yaml",
           permissions: "0400",
           content: Jason.encode!(%{
             network: %{
@@ -33,6 +33,9 @@ defmodule Virt.CloudInit.Userdata do
         }
       ],
       runcmd: [
+        # cloud-init will recreate this in the future, just remove the default initial netplan file
+        # the replacement will have the interface names we specify instead of the defaults
+        ["rm", "-f", "/etc/netplan/50-cloud-init.yaml"],
         ["netplan", "apply"],
         # retries as network comes up
         "for i in 1 2 3 4 5; do curl http://169.254.169.254/ci/#{domain.id}/provisioned && break || sleep 1; done"

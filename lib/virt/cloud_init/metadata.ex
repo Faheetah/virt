@@ -12,11 +12,11 @@ defmodule Virt.CloudInit.Metadata do
     gateway 192.168.1.254
   hostname: myhost
   """
-  def create_metadata(server) do
+  def create_metadata(domain) do
     %{
-      "instance-id" => server.id,
-      "hostname" => server.name,
-      "network-interfaces" => generate_network_interfaces(server.interfaces)
+      "instance-id" => domain.id,
+      "hostname" => domain.name,
+      "network-interfaces" => generate_network_interfaces(domain.interfaces)
     }
     |> Jason.encode!()
   end
