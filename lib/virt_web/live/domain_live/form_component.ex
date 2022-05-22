@@ -58,19 +58,26 @@ defmodule VirtWeb.DomainLive.FormComponent do
   defp save_domain(socket, :new, domain_params) do
     case Domains.create_domain(domain_params) do
       {:ok, _domain} ->
-        {:noreply,
-         socket
-         |> put_flash(:info, "Domain request processed")
-         |> push_redirect(to: socket.assigns.return_to)}
+        {
+          :noreply,
+          socket
+          |> put_flash(:info, "Domain request processed")
+          |> push_redirect(to: socket.assigns.return_to)
+        }
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, changeset: changeset)}
+        {
+          :noreply,
+          assign(socket, changeset: Map.put(changeset, :action, :validate))
+        }
 
       _ ->
-        {:noreply,
+        {
+          :noreply,
           socket
           |> put_flash(:error, "Domain failed to provision")
-          |> push_redirect(to: socket.assigns.return_to)}
+          |> push_redirect(to: socket.assigns.return_to)
+        }
     end
   end
 end

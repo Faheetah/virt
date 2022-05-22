@@ -45,34 +45,46 @@ defmodule Virt.Libvirt.Domains do
   """
 
   def create_domain(attrs \\ %{}) do
-    Virt.Provision.run_job(Virt.Jobs.CreateDomain, attrs)
+    case reserve_domain(attrs) do
+      {:ok, domain} ->
+        {:ok, host} = Virt.Provision.run_job(Virt.Jobs.CreateDomain, domain)
+        host
+
+      {:error, error} ->
+        {
+          :error,
+          %Domain{}
+          |> Domain.changeset(Map.put(attrs, "memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024))
+          |> Ecto.Changeset.add_error(:general, error)
+        }
+    end
   end
 
   def reserve_domain(attrs \\ %{}) do
-    host = find_host(attrs)
+    with {:ok, host} <- find_host(attrs),
+         {:ok, subnet} <- Subnets.get_subnet(attrs["subnet_id"]),
+         {:ok, address} <- Subnets.find_available_ip(subnet),
+         {:ok, ip_address} <- IpAddresses.create_ip_address(%{
+           "subnet_id" => attrs["subnet_id"],
+           "address" => address
+         })
+    do
+      attrs =
+        attrs
+        |> Map.put("domain_interfaces", [
+          %{type: "bridge", mac: gen_mac(), bridge: "br0", ip_address_id: ip_address.id}
+        ])
+        |> Map.put("domain_disks", reserve_domain_disks(host, attrs))
+        |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
+        |> Map.put("domain_access_keys", Enum.map(attrs["access_keys"], fn key_id -> %{"access_key_id" => key_id} end))
 
-    subnet = Subnets.get_subnet!(attrs["subnet_id"])
-
-    {:ok, address} = Subnets.find_available_ip(subnet)
-
-    {:ok, ip_address} =
-      IpAddresses.create_ip_address(%{
-        "subnet_id" => attrs["subnet_id"],
-        "address" => address
-      })
-
-    attrs =
-      attrs
-      |> Map.put("domain_interfaces", [
-        %{type: "bridge", mac: gen_mac(), bridge: "br0", ip_address_id: ip_address.id}
-      ])
-      |> Map.put("domain_disks", reserve_domain_disks(host, attrs))
-      |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
-      |> Map.put("domain_access_keys", Enum.map(attrs["access_keys"], fn key_id -> %{"access_key_id" => key_id} end))
-
-    %Domain{}
-    |> Domain.changeset(Map.put(attrs, "host_id", host.id))
-    |> Repo.insert()
+      {
+        :ok,
+        %Domain{}
+        |> Domain.changeset(Map.put(attrs, "host_id", host.id))
+        |> Repo.insert()
+      }
+    end
   end
 
   def provision_domain(%Domain{} = domain) do
@@ -119,7 +131,11 @@ defmodule Virt.Libvirt.Domains do
   # this will be capacity assignment in the future, for now just throw it on the first host
   # this obviously won't stay this way long term
   def find_host(_) do
-    Hosts.list_hosts() |> hd
+    if host = Hosts.list_hosts() != [] do
+      {:ok, hd(host)}
+    else
+      {:error, "No available hosts found"}
+    end
   end
 
   defp create_libvirt_domain(domain) do

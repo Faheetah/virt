@@ -1,9 +1,8 @@
 defmodule Virt.Jobs.CreateDomain do
   require Logger
 
-  def init(attrs) do
-    {:ok, domain} = Virt.Libvirt.Domains.reserve_domain(attrs)
-    %{domain: domain}
+  def init(domain) do
+    domain
   end
 
   def run(job) do
@@ -11,8 +10,11 @@ defmodule Virt.Jobs.CreateDomain do
     |> Virt.Libvirt.Domains.broadcast(:domain_provisioned)
   end
 
-  def cleanup(job) do
-    Logger.info("Deleting domain #{job.attrs.domain.id}")
-    Virt.Libvirt.Domains.delete_domain(job.attrs.domain)
+  def cleanup(%{attrs: %{domain: domain}}) do
+    Logger.info("Deleting domain #{domain.id}")
+    Virt.Libvirt.Domains.delete_domain(domain)
+  end
+  def cleanup(_) do
+    Logger.info("Nothing to clean up for domain")
   end
 end

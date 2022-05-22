@@ -10,6 +10,8 @@
     phx-submit="save"
     class="text-lg">
 
+    <%= error_tag f, :general %>
+
     <div class="mt-4">
       <%= label f, :name, class: "font-bold block" %>
       <%= text_input f, :name, class: "block border rounded border-gray-600 px-2 p" %>
