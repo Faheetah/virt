@@ -4,6 +4,7 @@ defmodule VirtWeb.HostLive.Show do
   use VirtWeb, :live_view
 
   alias Virt.Libvirt.Hosts
+  alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Pools.Pool
 
   @impl true
@@ -25,8 +26,9 @@ defmodule VirtWeb.HostLive.Show do
   end
 
   @impl true
-  def handle_event("synchronize_volume", %{"pool-id" => pool_id, "id" => id, "key" => key}, socket) do
-    {:ok, _} = Virt.Libvirt.Volumes.synchronize_libvirt_volume(pool_id, %{"name" => id, "key" => key})
+  def handle_event("synchronize_volume", %{"host-id" => host_id, "pool-name" => pool_name, "id" => id, "key" => key}, socket) do
+    pool = Pools.get_pool_by_name!(host_id, pool_name)
+    {:ok, _} = Virt.Libvirt.Volumes.synchronize_libvirt_volume(pool.id, %{"name" => id, "key" => key})
 
     {:noreply, socket}
   end
@@ -35,6 +37,7 @@ defmodule VirtWeb.HostLive.Show do
   def handle_event("synchronize_pool", pool, socket) do
     {:ok, _} =
       pool
+      # these attributes cannot be derived from libvirt, will need to parse XML to import
       |> Map.merge(%{"host_id" => pool["host-id"], "path" => "/dev/null", "type" => "dir"})
       |> then(&Pool.changeset(%Pool{}, &1))
       |> Virt.Repo.insert()
