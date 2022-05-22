@@ -17,8 +17,6 @@ ip a add $SUBNET dev br0
 # route all outbound connections
 iptables -t nat -I POSTROUTING -o br0 --src $SUBNET -j MASQUERADE
 
-iptables -t nat -I POSTROUTING -o br0 --dest $subnet -
-
 # redirect to the metadata endpoint
 iptables -t nat -I PREROUTING -p tcp --dport 80 -d 169.254.169.254 -j DNAT --to-destination $HOST_IP
 ```
