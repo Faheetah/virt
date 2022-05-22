@@ -6,7 +6,7 @@
       </svg>
     <% end %>
 
-      <span class="font-bold"><%= @job.module %> :: <%= @job.id %></span> :: <%= @job.pid || "_" %> :: <%= @job.status %>
+      <span class="font-bold"><%= @job.module %> :: <%= @job.id %></span> :: <%= @job.inserted_at %> :: <%= @job.pid || "_" %> :: <%= @job.status %>
     </div>
     <%= if @job.status in ["running", "failed", "error"] do %>
       <%= if @job.reason do %>
