@@ -3,6 +3,7 @@ defmodule VirtWeb.HostLive.PoolFormComponent do
 
   use VirtWeb, :live_component
 
+  require Logger
   alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Pools.Pool
 
@@ -58,10 +59,10 @@ defmodule VirtWeb.HostLive.PoolFormComponent do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, changeset: changeset)}
 
-      _ ->
+      {:error, error} ->
         {:noreply,
           socket
-          |> put_flash(:error, "Pool failed to provision")
+          |> put_flash(:error, "Pool failed to provision: #{error}")
           |> push_redirect(to: socket.assigns.return_to)}
     end
   end

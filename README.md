@@ -11,7 +11,7 @@ This is a sub optimal multi tenancy configuration, and is mostly notes for my ho
 Where $SUBNET is the subnet to add and $HOST_IP is where Virt is being served, or a proxy to the server
 
 ```
-# add the subnet to the host, where $SUBNET is the subnet
+# add the subnet to the host, where $SUBNET is the subnet, specifying the gateway for the IP
 ip a add $SUBNET dev br0
 
 # route all outbound connections

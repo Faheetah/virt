@@ -47,8 +47,7 @@ defmodule Virt.Libvirt.Domains do
   def create_domain(attrs \\ %{}) do
     case reserve_domain(attrs) do
       {:ok, domain} ->
-        {:ok, host} = Virt.Provision.run_job(Virt.Jobs.CreateDomain, domain)
-        host
+        Virt.Provision.run_job(Virt.Jobs.CreateDomain, domain)
 
       {:error, error} ->
         {
@@ -78,12 +77,9 @@ defmodule Virt.Libvirt.Domains do
         |> Map.put("memory_bytes", get_int(attrs["memory_mb"]) * 1024 * 1024)
         |> Map.put("domain_access_keys", Enum.map(attrs["access_keys"], fn key_id -> %{"access_key_id" => key_id} end))
 
-      {
-        :ok,
-        %Domain{}
-        |> Domain.changeset(Map.put(attrs, "host_id", host.id))
-        |> Repo.insert()
-      }
+      %Domain{}
+      |> Domain.changeset(Map.put(attrs, "host_id", host.id))
+      |> Repo.insert()
     end
   end
 
@@ -131,10 +127,9 @@ defmodule Virt.Libvirt.Domains do
   # this will be capacity assignment in the future, for now just throw it on the first host
   # this obviously won't stay this way long term
   def find_host(_) do
-    if host = Hosts.list_hosts() != [] do
-      {:ok, hd(host)}
-    else
-      {:error, "No available hosts found"}
+    case Hosts.list_hosts() do
+      [] -> {:error, "No available hosts found"}
+      host -> {:ok, hd(host)}
     end
   end
 

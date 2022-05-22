@@ -14,7 +14,7 @@ defmodule Virt.Jobs.SynchronizeDistribution do
     Hosts.list_hosts
     |> Enum.map(&Distributions.start_transfer(&1, distribution))
     |> Enum.reject(fn t -> t == nil end)
-    |> Task.await_many(120_000)
+    |> Task.await_many(600_000)
 
     Phoenix.PubSub.broadcast(Virt.PubSub, "distributions", {:distribution_synchronized, distribution})
   end

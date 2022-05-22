@@ -39,7 +39,15 @@ defmodule Virt.Network.Subnets do
   """
   def get_subnet!(id), do: Repo.get!(Subnet, id)
 
-  def get_subnet(id), do: Repo.get(Subnet, id)
+  def get_subnet(id) do
+    subnet = Repo.get(Subnet, id)
+
+    if subnet do
+      {:ok, subnet}
+    else
+      {:error, "Subnet #{id} not found"}
+    end
+  end
 
   def find_available_ip(subnet) do
     {:ok, first_ip} = IPv4.dump(subnet.gateway)
