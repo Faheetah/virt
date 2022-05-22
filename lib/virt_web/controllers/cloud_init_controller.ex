@@ -15,8 +15,13 @@ defmodule VirtWeb.CloudInitController do
     text(conn, "")
   end
 
-  def vendordata(conn, _params) do
-    text(conn, "")
+  def vendordata(conn, %{"id" => id}) do
+    vendordata =
+      Virt.Libvirt.Domains.get_domain!(id)
+      |> Virt.Repo.preload([domain_interfaces: [ip_address: [:subnet]], domain_access_keys: [:access_key]])
+      |> Virt.CloudInit.Vendordata.create_vendordata()
+    text(conn, vendordata)
+    # text(conn, "")
   end
 
   def provisioned(conn, %{"id" => id}) do
