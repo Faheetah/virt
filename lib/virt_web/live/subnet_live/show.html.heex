@@ -35,6 +35,7 @@
       <th class="p-2">IP</th>
       <th class="p-2">Label</th>
       <th class="p-2">Host</th>
+      <th class="p-2">Unassign</th>
     </tr>
   </thead>
   <tbody>
@@ -51,6 +52,13 @@
           <%= live_redirect to: Routes.domain_show_path(@socket, :show, ip_address.domain_interface.domain), class: "pr-2" do %>
             <%= ip_address.domain_interface.domain.name %>
           <% end %>
+          <% end %>
+        </td>
+        <td class="p-2">
+          <%= link to: "#", phx_click: "delete", phx_value_id: @subnet.id, data: [confirm: "Are you sure?"], class: "ml-2" do %>
+            <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
           <% end %>
         </td>
       </tr>

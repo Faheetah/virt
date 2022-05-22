@@ -39,6 +39,8 @@ defmodule Virt.Network.Subnets do
   """
   def get_subnet!(id), do: Repo.get!(Subnet, id)
 
+  def get_subnet(id), do: Repo.get(Subnet, id)
+
   def find_available_ip(subnet) do
     {:ok, first_ip} = IPv4.dump(subnet.gateway)
     {:ok, last_ip} = IPv4.dump(subnet.broadcast)

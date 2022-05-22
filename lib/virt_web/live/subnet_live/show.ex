@@ -4,6 +4,7 @@ defmodule VirtWeb.SubnetLive.Show do
   use VirtWeb, :live_view
 
   alias Virt.Network.Subnets
+  alias Virt.Network.IpAddresses
 
   @impl true
   def mount(_params, _session, socket) do
@@ -20,6 +21,12 @@ defmodule VirtWeb.SubnetLive.Show do
      socket
      |> assign(:page_title, page_title(socket.assigns.live_action))
      |> assign(:subnet, subnet)}
+  end
+
+  @impl true
+  def handle_event("delete", %{"id" => id}, socket) do
+    ip = IpAddresses.get_ip_address!(id)
+    {:ok, _} = IpAddresses.delete_ip_address(ip)
   end
 
   defp page_title(:show), do: "Show Subnet"
