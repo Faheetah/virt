@@ -12,7 +12,7 @@
 
     <div class="mt-4">
       <%= label f, :label, class: "font-bold block" %>
-      <%= text_input f, :label, class: "block border rounded border-gray-600 px-2 p" %>
+      <%= text_input f, :label, class: "block border rounded border-gray-600 px-2 p", autofocus: true %>
       <%= error_tag f, :label %>
     </div>
 
@@ -20,12 +20,11 @@
       <%= label f, :subnet, "Subnet (CIDR)", class: "font-bold block" %>
       <%= text_input f, :subnet, class: "block border rounded border-gray-600 px-2 p" %>
       <%= error_tag f, :subnet %>
+      <%= error_tag f, :broadcast %>
+      <%= error_tag f, :network %>
+      <%= error_tag f, :gateway %>
+      <%= error_tag f, :netmask %>
     </div>
-
-    <%= error_tag f, :broadcast %>
-    <%= error_tag f, :network %>
-    <%= error_tag f, :gateway %>
-    <%= error_tag f, :netmask %>
 
     <div class="inline-block mt-4 rounded bg-blue-600 hover:bg-blue-500 text-blue-100">
       <%= submit "Save", phx_disable_with: "Saving...", class: "px-4 py-2" %>

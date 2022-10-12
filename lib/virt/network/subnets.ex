@@ -77,28 +77,16 @@ defmodule Virt.Network.Subnets do
 
   """
   def create_subnet(attrs \\ %{}) do
-    [network, cidr] = String.split(attrs["subnet"], "/")
-    {:ok, network_value} = IPv4.dump(network)
-    {cidr_value, _} =  Integer.parse(cidr)
-    {:ok, netmask} = IPv4.load(4_294_967_295 - Integer.pow(2,32 - cidr_value) + 1)
-    {:ok, netmask_value} = IPv4.dump(netmask)
-    {:ok, broadcast} = IPv4.load(4_294_967_295 - (netmask_value - network_value))
-    {:ok, gateway} = IPv4.load(network_value + 1)
-
+    # todo, this whole series of events should be a job
     {:ok, subnet} =
       %Subnet{}
-      |> Subnet.changeset(%{
-        "label" => attrs["label"],
-        "network" => network,
-        "gateway" => gateway,
-        "broadcast" => broadcast,
-        "netmask" => netmask
-      })
+      |> change_subnet(attrs)
       |> Repo.insert()
 
-    IpAddresses.create_ip_address(%{"label" => "network", "address" => network, "subnet_id" => subnet.id})
-    IpAddresses.create_ip_address(%{"label" => "gateway", "address" => gateway, "subnet_id" => subnet.id})
-    IpAddresses.create_ip_address(%{"label" => "broadcast", "address" => broadcast, "subnet_id" => subnet.id})
+    IpAddresses.create_ip_address(%{"label" => "network", "address" => subnet.network, "subnet_id" => subnet.id})
+    IpAddresses.create_ip_address(%{"label" => "gateway", "address" => subnet.gateway, "subnet_id" => subnet.id})
+    IpAddresses.create_ip_address(%{"label" => "broadcast", "address" => subnet.broadcast, "subnet_id" => subnet.id})
+    {:ok, subnet}
   end
 
   def calculate_netmask(cidr) do
@@ -156,6 +144,32 @@ defmodule Virt.Network.Subnets do
 
   """
   def change_subnet(%Subnet{} = subnet, attrs \\ %{}) do
-    Subnet.changeset(subnet, attrs)
+    # ugly, should use virtual field and call this to Subnet and make a parsing module
+    # this is also a naive formula that assumes first_ip is the actual first IP, it does not do proper subnet math
+    with false <- is_nil(attrs["subnet"]),
+      [network, cidr] <- String.split(attrs["subnet"], "/"),
+      {:ok, network_value} <- IPv4.dump(network),
+      {cidr_value, _} <-  Integer.parse(cidr),
+      {:ok, netmask} <- IPv4.load(4_294_967_295 - Integer.pow(2,32 - cidr_value) + 1),
+      {:ok, netmask_value} <- IPv4.dump(netmask),
+      {:ok, broadcast} <- IPv4.load(4_294_967_295 - (netmask_value - network_value)),
+      {:ok, gateway} <- IPv4.load(network_value + 1)
+    do
+      subnet
+      |> Subnet.changeset(%{
+        "label" => attrs["label"],
+        "network" => network,
+        "gateway" => gateway,
+        "broadcast" => broadcast,
+        "netmask" => netmask,
+        "subnet" => attrs["subnet"]
+      })
+    else
+      # extract to function
+      error ->
+        Subnet.changeset(subnet, %{"label" => attrs["label"], "subnet" => attrs["subnet"]})
+        |> Map.put(:errors, [])
+        |> Ecto.Changeset.add_error(:subnet, "could not parse subnet, requires network/cidr i.e. 192.0.2.0/24")
+    end
   end
 end
