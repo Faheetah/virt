@@ -16,11 +16,19 @@ defmodule Virt.Provision do
   end
 
   def delete_job(id) do
-    Jobs.get_job!(id)
-    |> Jobs.delete_job()
+    job = Jobs.get_job!(id)
+    pid = :erlang.list_to_pid(to_charlist(job.pid))
+
+    if pid != :undefined do
+      Process.exit(pid, :normal)
+      Logger.info "Killed PID #{job.pid} for #{job.module}"
+    end
+
+    Jobs.delete_job(job)
+    |> tap(fn job -> Logger.info("Deleted job #{job.id} #{job.module}") end)
   end
 
-  def restart_job(_job) do
+  def retry_job(_job) do
     # include resuming state erlang:binary_to_term to attrs
   end
 
@@ -40,7 +48,7 @@ defmodule Virt.Provision do
           job_module.run(job)
           Logger.info("Finished #{job.id} #{job.module}")
           {:ok, job} = Jobs.update_job_status(job, "done")
-          Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_competed, job})
+          Phoenix.PubSub.broadcast(Virt.PubSub, "jobs", {:job_completed, job})
         rescue
           exception ->
             fail_job(job_module, job, exception)

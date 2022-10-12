@@ -24,7 +24,7 @@ defmodule VirtWeb.SubnetLive.Show do
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
+  def handle_event("delete", %{"id" => id}, _socket) do
     ip = IpAddresses.get_ip_address!(id)
     {:ok, _} = IpAddresses.delete_ip_address(ip)
   end

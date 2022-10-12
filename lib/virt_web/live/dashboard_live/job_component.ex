@@ -5,21 +5,10 @@ defmodule VirtWeb.JobLive.JobComponent do
 
   alias Virt.Provision.Jobs
 
-  def mount(_params, _session, socket) do
-    if connected?(socket) do
-      Phoenix.PubSub.subscribe(Virt.PubSub, "jobs")
-    end
-
-    {:ok, socket}
-  end
-
-  def handle_params(%{"id" => id}, _, socket) do
-    job = Jobs.get_job!(id)
-
-    {
-      :noreply,
-      socket
-      |> assign(:job, job)
-    }
-  end
+  def job_color("ready"), do: "bg-grey-100"
+  def job_color("running"), do: "bg-yellow-100"
+  def job_color("error"), do: "bg-red-100"
+  def job_color("failed"), do: "bg-red-100"
+  def job_color("done"), do: "bg-green-100"
+  def job_color(_), do: "bg-grey-100"
 end

@@ -166,7 +166,7 @@ defmodule Virt.Network.Subnets do
       })
     else
       # extract to function
-      error ->
+      _error ->
         Subnet.changeset(subnet, %{"label" => attrs["label"], "subnet" => attrs["subnet"]})
         |> Map.put(:errors, [])
         |> Ecto.Changeset.add_error(:subnet, "could not parse subnet, requires network/cidr i.e. 192.0.2.0/24")

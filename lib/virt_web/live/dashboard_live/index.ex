@@ -26,6 +26,16 @@ defmodule VirtWeb.DashboardLive.Index do
   end
 
   @impl true
+  def handle_event("test", %{"length" => length}, socket) do
+    case Integer.parse(length) do
+      {i, ""} -> Virt.Provision.run_job(Virt.Provision.Jobs.Test, %{i: i})
+      :error -> Virt.Provision.run_job(Virt.Provision.Jobs.Test, %{i: length})
+    end
+
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     {:ok, _} = Provision.delete_job(id)
 

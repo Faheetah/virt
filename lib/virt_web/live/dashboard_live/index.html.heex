@@ -10,8 +10,33 @@
   </div>
 </div>
 
-<div class="p-4" phx-update="replace">
-<%= for job <- @jobs do %>
-  <.live_component module={VirtWeb.JobLive.JobComponent} id={"job-#{job.id}"} job={job} />
+<%= link to: "#", phx_click: "test", phx_value_length: "4", class: "ml-2" do %>
+(4 second test)
 <% end %>
-</div>
+
+<%= link to: "#", phx_click: "test", phx_value_length: "20", class: "ml-2" do %>
+(20 second test)
+<% end %>
+
+<%= link to: "#", phx_click: "test", phx_value_length: "1000", class: "ml-2" do %>
+(1000 second test)
+<% end %>
+
+<%= link to: "#", phx_click: "test", phx_value_length: "alphabet", class: "ml-2" do %>
+(fail test)
+<% end %>
+
+<table class="border border-black" phx-update="replace" id="jobs">
+  <tr class="bg-gray-200">
+    <th class="border border-black">Cancel</th>
+    <th class="border border-black">ID</th>
+    <th class="border border-black">Type</th>
+    <th class="border border-black">Date</th>
+    <th class="border border-black">PID</th>
+    <th class="border border-black">Status</th>
+  </tr>
+  <%= for job <- @jobs do %>
+    <.live_component module={VirtWeb.JobLive.JobComponent} id={"job-#{job.id}"} job={job} />
+  <% end %>
+</table>
+
