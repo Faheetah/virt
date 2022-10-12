@@ -1,25 +1,10 @@
 <tr class={job_color(@job.status)}>
   <td class="p-2 border-black border">
-    <%= link to: "#", phx_click: "delete", phx_value_id: @job.id, class: "ml-2" do %>
-      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    <% end %>
+    <%= live_patch "Show", to: Routes.dashboard_index_path(@socket, :show, @job), class: "px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 text-blue-100" %>
   </td>
   <td class="p-2 border border-black font-bold"><%= @job.module %></td>
   <td class="p-2 border border-black"><%= @job.inserted_at %></td>
   <td class="p-2 border border-black"><%= @job.id %></td>
   <td class="p-2 border border-black"><%= @job.pid || "_" %></td>
   <td class="p-2 border border-black"><%= @job.status %></td>
-
-  <%# ["running", "failed", "error"] %>
-  <%= if @job.status in [] do %>
-    <%= if @job.reason do %>
-      <div class="p-4 my-2 bg-red-100 text-red-600 border border-red-300 font-bold"><%= @job.reason %></div>
-    <% end %>
-
-    <div class="p-4 my-2 text-neutral-800 bg-neutral-100 border border-neutral-300">
-      <%= inspect :erlang.binary_to_term(@job.state) %>
-    </div>
-  <% end %>
 </tr>

@@ -1,3 +1,16 @@
+<%= if @live_action in [:show] do %>
+  <.modal return_to={Routes.dashboard_index_path(@socket, :index)}>
+    <.live_component
+      module={VirtWeb.DashboardLive.JobDetailComponent}
+      id={@job.id || :new}
+      title={@page_title}
+      action={@live_action}
+      job={@job}
+      return_to={Routes.dashboard_index_path(@socket, :index)}
+    />
+  </.modal>
+<% end %>
+
 <div class="p-4 text-4xl">Dashboard</div>
 
 <div class="p-4">
@@ -28,10 +41,10 @@
 
 <table class="border border-black" phx-update="replace" id="jobs">
   <tr class="bg-gray-200">
-    <th class="border border-black">Cancel</th>
-    <th class="border border-black">ID</th>
-    <th class="border border-black">Type</th>
+    <th class="border border-black">Details</th>
+    <th class="border border-black">Action</th>
     <th class="border border-black">Date</th>
+    <th class="border border-black">ID</th>
     <th class="border border-black">PID</th>
     <th class="border border-black">Status</th>
   </tr>

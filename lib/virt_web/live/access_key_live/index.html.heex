@@ -1,10 +1,14 @@
 <%= if @live_action in [:new, :edit] do %>
-  <%= live_modal VirtWeb.AccessKeyLive.FormComponent,
-    id: @access_key.id || :new,
-    title: @page_title,
-    action: @live_action,
-    access_key: @access_key,
-    return_to: Routes.access_key_index_path(@socket, :index) %>
+  <.modal return_to={Routes.access_key_index_path(@socket, :index)}>
+    <.live_component
+      module={VirtWeb.AccessKeyLive.FormComponent}
+      id={@access_key.id || :new}
+      title={@page_title}
+      action={@live_action}
+      access_key={@access_key}
+      return_to={Routes.access_key_index_path(@socket, :index)}
+    />
+  </.modal>
 <% end %>
 
 <div class="mb-8 grid grid-cols-2">

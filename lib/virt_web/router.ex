@@ -23,6 +23,7 @@ defmodule VirtWeb.Router do
     get "/ci/:id/provisioned", CloudInitController, :provisioned
 
     live "/", DashboardLive.Index, :index
+    live "/job/:id", DashboardLive.Index, :show
 
     live "/hosts", HostLive.Index, :index
     live "/hosts/new", HostLive.Index, :new

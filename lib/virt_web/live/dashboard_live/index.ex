@@ -4,6 +4,7 @@ defmodule VirtWeb.DashboardLive.Index do
   alias Virt.Libvirt.Hosts
   alias Virt.Libvirt.Domains
   alias Virt.Provision
+  alias Virt.Provision.Jobs
 
   @impl true
   def mount(_params, _session, socket) do
@@ -76,6 +77,13 @@ defmodule VirtWeb.DashboardLive.Index do
     socket
     |> assign(:page_title, "Dashboard")
     |> assign(:dashboard, nil)
+  end
+
+  defp apply_action(socket, :show, %{"id" => id}) do
+    job = Jobs.get_job!(id)
+    socket
+    |> assign(:page_title, "Job #{id}")
+    |> assign(:job, job)
   end
 
   defp list_hosts() do
