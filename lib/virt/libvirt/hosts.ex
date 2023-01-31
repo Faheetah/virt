@@ -36,6 +36,7 @@ defmodule Virt.Libvirt.Hosts do
     %Host{}
     |> Host.changeset(attrs)
     |> Repo.insert()
+    |> tap(fn {:ok, host} -> provision_host(host) end)
   end
 
   @doc """
@@ -54,6 +55,41 @@ defmodule Virt.Libvirt.Hosts do
   """
   def delete_host(%Host{} = host) do
     Repo.delete(host)
+  end
+
+  @doc """
+  Resets a host.
+  WARNING: This will fully reset a host and all associated records.
+  """
+  def reset_host(%Host{} = host) do
+    {:ok, conn} = Libvirt.connect(host.connection_string)
+    args = %{"need_results" => 1, "flags" => 0}
+
+    Libvirt.connect_list_all_domains(conn, args)
+    |> then(&elem(&1, 1))
+    |> Map.get("domains")
+    |> Enum.each(&Libvirt.domain_destroy(conn, %{"dom" => &1}))
+
+    Libvirt.connect_list_all_storage_pools(conn, args)
+    |> then(&elem(&1, 1))
+    |> Map.get("pools")
+    |> Enum.each(fn pool ->
+      Libvirt.storage_pool_list_all_volumes(conn, Map.put(args, "pool", pool))
+      |> then(&elem(&1, 1))
+      |> Map.get("vols")
+      |> Enum.each(&Libvirt.storage_vol_delete(conn, %{"vol" => &1, "flags" => 0}))
+
+      Libvirt.storage_pool_destroy(conn, %{"pool" => pool})
+      Libvirt.storage_pool_undefine(conn, %{"pool" => pool})
+    end)
+
+    delete_host(host)
+    Repo.insert(host)
+  end
+
+  def provision_host(%Host{} = host) do
+    Virt.Libvirt.Pools.create_pool(%{name: "base_images", path: "/tmp/pool/base", type: "dir", host_id: host.id})
+    Virt.Libvirt.Pools.create_pool(%{name: "customer_images", path: "/tmp/pool/customer", type: "dir", host_id: host.id})
   end
 
   @doc """

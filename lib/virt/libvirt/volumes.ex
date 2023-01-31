@@ -14,6 +14,7 @@ defmodule Virt.Libvirt.Volumes do
   @doc """
   Returns the list of volumes.
   """
+  @todo "this needs better filtering"
   def list_volumes do
     Repo.all(Volume)
   end
