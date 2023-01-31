@@ -15,6 +15,9 @@
       <%#
         IP needs to map to the hypervisor's metadata proxy, this in the future should get
         authenticated by the network configuration, and the hypervisor handle it with iptables forward
+
+        This can change if the host uses something like OVS where a whole network can be created.
+        Right now, it will get the IP from DHCP.
       %>
       <entry name="serial">ds=nocloud-net;s=http://10.0.0.2:4000/ci/<%= domain.id %>/</entry>
     </system>
@@ -34,27 +37,22 @@
       <target dev='<%= disk.device %>' bus='ide'/>
     </disk>
     <% end %>
+
     <serial type='pty'>
       <target port='0'/>
     </serial>
+
     <console type='pty'>
       <target type='serial' port='0'/>
     </console>
 
-    <%#
-      We might not need the user interface since 169.254.169.254 will be link local
-      Might be able to just drop it and use the default bridge interface to bootstrap
-      Could possibly still pass the <ip address='169 ... part in for initial bootstrap if needed
-    %>
     <%= for interface <- domain.domain_interfaces do %>
-
     <%= if interface.type == "bridge" do %>
     <interface type='<%= interface.type %>'>
       <mac address='<%= interface.mac %>'/>
       <source bridge='<%= interface.bridge %>'/>
     </interface>
     <% end %>
-
     <% end %>
   </devices>
 </domain>

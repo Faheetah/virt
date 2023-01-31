@@ -6,4 +6,4 @@ mix compile
 mix assets.deploy
 mix release --overwrite
 rsync -av _build/prod/rel/virt/ colosseum.sudov.im:virt/
-ssh colosseum "sudo systemctl restart virt"
+ssh colosseum.sudov.im "sudo systemctl restart virt"
