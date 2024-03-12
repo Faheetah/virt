@@ -144,11 +144,11 @@
       </svg>
       <% end %>
 
-    <%= link to: "#", phx_click: "delete_libvirt_pool", phx_value_id: pool["uuid"], phx_value_name: pool["name"], phx_value_host_id: @host.id, class: "ml-2" do %>
-      <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    <% end %>
+      <%= link to: "#", phx_click: "delete_libvirt_volume", phx_value_pool: pool["name"], phx_value_name: volume["name"], phx_value_host_id: @host.id, phx_value_key: volume["key"], class: "ml-2" do %>
+        <svg class="inline w-8 h-8 fill-red-100 stroke-red-600" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+      <% end %>
     </div>
   <% end %>
 <% end %>

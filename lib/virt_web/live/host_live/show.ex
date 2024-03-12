@@ -6,6 +6,7 @@ defmodule VirtWeb.HostLive.Show do
   alias Virt.Libvirt.Hosts
   alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Pools.Pool
+  alias Virt.Libvirt.Volumes
 
   @impl true
   def mount(_params, _session, socket) do
@@ -46,10 +47,14 @@ defmodule VirtWeb.HostLive.Show do
   end
 
   @impl true
-  def handle_event("delete_libvirt_volume", _volume, socket) do
+  def handle_event("delete_libvirt_volume", %{"host-id" => host_id, "pool" => pool, "name" => name, "key" => key}, socket) do
+    host = Hosts.get_host!(host_id)
+    {:ok, connection} = Libvirt.connect(host.connection_string)
+    Libvirt.storage_vol_wipe(connection, %{"vol" => %{"pool" => pool, "name" => name, "key" => key}, "flags" => 0})
+    {:ok, nil} = Libvirt.storage_vol_delete(connection, %{"vol" => %{"pool" => pool, "name" => name, "key" => key}, "flags" => 0})
+
     {:noreply, socket}
   end
-
 
   @impl true
   def handle_event("delete_libvirt_pool", %{"id" => id, "name" => name, "host-id" => host_id}, socket) do

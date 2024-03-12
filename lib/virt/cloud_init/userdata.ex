@@ -38,7 +38,7 @@ defmodule Virt.CloudInit.Userdata do
         ["rm", "-f", "/etc/netplan/50-cloud-init.yaml"],
         ["netplan", "apply"],
         # retries as network comes up
-        "for i in 1 2 3 4 5 6 7 8 9 10; do curl http://169.254.169.254/ci/#{domain.id}/provisioned && break || sleep i; done"
+        "for i in 1 2 3 4 5 6 7 8 9 10; do curl http://169.254.169.254/ci/#{domain.id}/provisioned && break || sleep $i; done"
       ]
     }
     )
