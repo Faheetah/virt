@@ -14,6 +14,7 @@ defmodule Virt.Libvirt.Pools do
   """
   def list_pools do
     Repo.all(Pool)
+    |> Repo.preload(:host)
   end
 
   @doc """
@@ -65,6 +66,11 @@ defmodule Virt.Libvirt.Pools do
 
       _ -> {:error, "an unspecified error occurred"}
     end
+  end
+
+  def resync_pools() do
+    list_pools()
+    |> Enum.map(fn pool -> create_libvirt_pool(pool) end)
   end
 
   defp create_libvirt_pool(pool) do

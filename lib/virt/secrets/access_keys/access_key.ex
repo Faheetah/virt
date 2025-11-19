@@ -27,7 +27,8 @@ defmodule Virt.Secrets.AccessKeys.AccessKey do
     public_key = String.trim(attrs["public_key"] || "")
 
     try do
-      [{{:RSAPublicKey, _, _}, [comment: comment]}] = :ssh_file.decode(public_key, :public_key)
+      # need to try multiple key types
+      [{{_, _, _}, [comment: comment]}] = :ssh_file.decode(public_key, :public_key)
       changeset
       |> Ecto.Changeset.put_change(:public_key, public_key)
       |> Ecto.Changeset.put_change(:comment, List.to_string(comment))

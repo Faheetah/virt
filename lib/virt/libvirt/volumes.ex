@@ -14,7 +14,7 @@ defmodule Virt.Libvirt.Volumes do
   @doc """
   Returns the list of volumes.
   """
-  @todo "this needs better filtering"
+  # @todo "this needs better filtering"
   def list_volumes do
     Repo.all(Volume)
   end
@@ -87,31 +87,44 @@ defmodule Virt.Libvirt.Volumes do
   For helping to manage base images
   """
   def download_image(url, to) do
-    File.mkdir_p!("images/")
-    unless File.exists?("images/#{to}") do
-      {:ok, :saved_to_file} = :httpc.request(:get, {String.to_charlist(url), []}, [], [stream: String.to_charlist("images/#{to}")])
+    if Keyword.get(Application.fetch_env!(:libvirt, :rpc), :backend) != Libvirt.RPC.Backends.Test do
+      File.mkdir_p!("images/")
+      unless File.exists?("images/#{to}") do
+        {:ok, :saved_to_file} = :httpc.request(:get, {String.to_charlist(url), []}, [], [stream: String.to_charlist("images/#{to}")])
+      end
     end
     {:ok, "images/#{to}"}
   end
 
  def create_base_image(%{"url" => url, "name" => name} = attrs) do
-    download_image(url, name)
-    size = File.stat!("images/#{name}").size
-    vol =
-      attrs
-      |> Map.put("capacity_bytes", size)
-      |> create_volume()
-      |> then(fn {:ok, v} -> v end)
-      |> provision_volume(nil)
-      |> then(fn {:ok, v} -> v end)
-      |> Virt.Repo.preload(pool: [:host])
-
-    {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
-
     if Keyword.get(Application.fetch_env!(:libvirt, :rpc), :backend) != Libvirt.RPC.Backends.Test do
+      download_image(url, name)
+
+      size = File.stat!("images/#{name}").size
+
+      vol =
+        attrs
+        |> Map.put("capacity_bytes", size)
+        |> create_volume()
+        |> then(fn {:ok, v} -> v end)
+        |> provision_volume(nil)
+        |> then(fn {:ok, v} -> v end)
+        |> Virt.Repo.preload(pool: [:host])
+
+      {:ok, socket} = Libvirt.connect(vol.pool.host.connection_string)
+
       {:ok, nil} = Libvirt.storage_vol_upload(socket, %{"vol" => %{"pool" => vol.pool.name, "name" => vol.id, "key" => vol.key}, "offset" => 0, "length" => size, "flags" => 0}, File.stream!("images/#{name}", [], 262_148))
       {:ok, vol}
     else
+      vol =
+        attrs
+        |> Map.put("capacity_bytes", 1234)
+        |> create_volume()
+        |> then(fn {:ok, v} -> v end)
+        |> provision_volume(nil)
+        |> then(fn {:ok, v} -> v end)
+        |> Virt.Repo.preload(pool: [:host])
+
       {:ok, vol}
     end
   end

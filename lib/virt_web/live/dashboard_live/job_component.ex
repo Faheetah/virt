@@ -3,8 +3,6 @@ defmodule VirtWeb.JobLive.JobComponent do
 
   use VirtWeb, :live_component
 
-  alias Virt.Provision.Jobs
-
   def job_color("ready"), do: "bg-grey-100"
   def job_color("running"), do: "bg-yellow-100"
   def job_color("error"), do: "bg-red-100"

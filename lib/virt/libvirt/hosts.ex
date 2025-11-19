@@ -39,6 +39,20 @@ defmodule Virt.Libvirt.Hosts do
     |> tap(fn {:ok, host} -> provision_host(host) end)
   end
 
+  def create_host!(attrs \\ %{}) do
+    host =
+      %Host{}
+      |> Host.changeset(attrs)
+      |> Repo.insert()
+
+    case host do
+      {:ok, host} -> provision_host(host)
+      {:error, _} ->
+        get_host_by_name!(attrs["name"])
+        |> provision_host
+    end
+  end
+
   @doc """
   Updates a host.
   """

@@ -4,7 +4,6 @@ defmodule VirtWeb.AccessKeyLive.FormComponent do
   use VirtWeb, :live_component
 
   alias Virt.Secrets.AccessKeys
-  alias Virt.Network.Subnets
 
   @impl true
   def update(%{access_key: access_key} = assigns, socket) do

@@ -1,6 +1,6 @@
 import Config
 
-config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Direct
+config :libvirt, :rpc, backend: Libvirt.RPC.Backends.Shared
 
 config :virt, Virt.Repo,
   username: "postgres",

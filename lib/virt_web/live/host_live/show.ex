@@ -6,7 +6,6 @@ defmodule VirtWeb.HostLive.Show do
   alias Virt.Libvirt.Hosts
   alias Virt.Libvirt.Pools
   alias Virt.Libvirt.Pools.Pool
-  alias Virt.Libvirt.Volumes
 
   @impl true
   def mount(_params, _session, socket) do
